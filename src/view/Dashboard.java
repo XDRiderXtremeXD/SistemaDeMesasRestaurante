@@ -35,6 +35,8 @@ public class Dashboard extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     public Dashboard() {
+    	System.out.println("Se creó el dashboard");
+    	
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1600, 900);
         
