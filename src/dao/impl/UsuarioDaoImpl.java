@@ -58,7 +58,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
 
         try {
             cn = MySqlConexion.getConexion();
-            String sql = "SELECT IdUsuario, NombreUsuario, Correo, Contrasena, Rol FROM Usuario WHERE Id = ?";
+            String sql = "SELECT IdUsuario, NombreUsuario, Correo, Contrasena, Rol FROM Usuario WHERE IdUsuario = ?";
 
             psm = cn.prepareStatement(sql);
             psm.setInt(1, id);
@@ -162,7 +162,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     }
 
 	@Override
-	public Usuario updateUsuario(Usuario usuario) {
+	public boolean updateUsuario(Usuario usuario) {
 		Connection cn = null;
 		PreparedStatement psm = null;
 
@@ -170,7 +170,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
             cn = MySqlConexion.getConexion();
 
             String sql = "UPDATE Usuario SET NombreUsuario = ?, Correo = ?, Contrasena = ?, Rol = ? "
-                       + "WHERE Id = ?";
+                       + "WHERE IdUsuario = ?";
 
             psm = cn.prepareStatement(sql);
 
@@ -181,10 +181,9 @@ public class UsuarioDaoImpl implements IUsuarioDao {
             psm.setInt(5, usuario.getIdUsuario());
 
             int resultado = psm.executeUpdate();
-
-            if (resultado == 0) {
-                System.out.println("No se encontró el usuario con el ID proporcionado.");
-            }
+            if (resultado != 0)
+            	return true;
+            
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -195,6 +194,6 @@ public class UsuarioDaoImpl implements IUsuarioDao {
                 e.printStackTrace();
             }
         }
-        return usuario;
+        return false;
 	}
 }

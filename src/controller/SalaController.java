@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 
 public class SalaController {
     
-    	private ISalaDao salaDao;
+    private ISalaDao salaDao;
 
     public SalaController() {
         DAOFactory daoFactory = DAOFactory.getDaoFactory(DAOFactory.MYSQL);
