@@ -79,7 +79,7 @@ public class CartaDelDiaView extends JPanel {
 
         txtPrecio = new CustomTextField();
         txtPrecio.setBounds(50, 190, 300, 40);
-        txtPrecio.setPlaceholder("Ingresa el precio del plato");
+        txtPrecio.setPlaceholder("Ej: 12,99");
         formularioPanel.add(txtPrecio);
 
         txtPrecio.addKeyListener(new KeyAdapter() {
@@ -110,6 +110,7 @@ public class CartaDelDiaView extends JPanel {
         btnAgregar.setText("Agregar Plato");
         btnAgregar.setBounds(125, 244, 150, 46);
         btnAgregar.setEnabled(false);
+        btnAgregar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         formularioPanel.add(btnAgregar);
 
         Runnable validateButton = () -> {
@@ -184,8 +185,8 @@ public class CartaDelDiaView extends JPanel {
                 txtNombre.setText("");
                 txtPrecio.setText("");
                 
-                txtNombre.restorePlaceholder(txtNombre);
-                txtPrecio.restorePlaceholder(txtPrecio);
+                txtNombre.restorePlaceholder();
+                txtPrecio.restorePlaceholder();
 
                 formularioPanel.requestFocus();
             }
@@ -200,6 +201,7 @@ public class CartaDelDiaView extends JPanel {
         btnEliminar.setText("Eliminar Plato");
         btnEliminar.setBounds(125, 304, 150, 46);
         btnEliminar.setEnabled(false);
+        btnEliminar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         formularioPanel.add(btnEliminar);
 
         tablaPlatos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

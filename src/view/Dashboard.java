@@ -7,8 +7,10 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import controller.PlatoController;
+import model.Usuario;
 
 public class Dashboard extends JFrame implements ActionListener {
+	private Usuario usuario;
 	private PlatoController platoController;
 
     private SalasView salasView;
@@ -21,7 +23,6 @@ public class Dashboard extends JFrame implements ActionListener {
     private UsuariosView usuariosView;
     private PlatosView platosView;
     
-    // Crear botones
     private JButton btnCartaDelDia;
     private JButton btnSalas;
     private JButton btnPedidos;
@@ -34,8 +35,8 @@ public class Dashboard extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 
-    public Dashboard() {
-    	System.out.println("Se creó el dashboard");
+    public Dashboard(Usuario usuario) {  
+    	this.usuario = usuario;
     	
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1600, 900);
@@ -151,7 +152,8 @@ public class Dashboard extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> new Dashboard());
+    	Usuario usuario = new Usuario();
+        EventQueue.invokeLater(() -> new Dashboard(usuario));
     }
 
 	@Override

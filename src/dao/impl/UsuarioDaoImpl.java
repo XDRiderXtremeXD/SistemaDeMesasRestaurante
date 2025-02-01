@@ -1,6 +1,5 @@
 package dao.impl;
 
-import java.io.Console;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,5 +195,43 @@ public class UsuarioDaoImpl implements IUsuarioDao {
             }
         }
         return usuario;
+	}
+	
+	@Override
+	public Usuario login(String nombreUsuario, String contrasena) {
+	    Usuario usuario = null;
+	    Connection cn = null;
+	    PreparedStatement psm = null;
+	    ResultSet rs = null;
+
+	    try {
+	        cn = MySqlConexion.getConexion();
+	        String sql = "SELECT IdUsuario, NombreUsuario, Correo, Contrasena, Rol FROM Usuario WHERE NombreUsuario = ? AND Contrasena = ?";
+
+	        psm = cn.prepareStatement(sql);
+	        psm.setString(1, nombreUsuario);
+	        psm.setString(2, contrasena);
+	        rs = psm.executeQuery();
+
+	        if (rs.next()) {
+	            usuario = new Usuario();
+	            usuario.setIdUsuario(rs.getInt("IdUsuario"));
+	            usuario.setNombreUsuario(rs.getString("NombreUsuario"));
+	            usuario.setCorreo(rs.getString("Correo"));
+	            usuario.setContrasena(rs.getString("Contrasena"));
+	            usuario.setRol(rs.getString("Rol"));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (psm != null) psm.close();
+	            if (cn != null) cn.close();
+	        } catch (SQLException e2) {
+	            e2.printStackTrace();
+	        }
+	    }
+	    return usuario;
 	}
 }

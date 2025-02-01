@@ -10,4 +10,5 @@ public interface IUsuarioDao {
 	boolean createUsuario(Usuario usuario);
 	Usuario updateUsuario(Usuario usuario);
 	boolean deleteUsuario(int id);
+	public Usuario login(String nombreUsuario, String contrasena);
 }
