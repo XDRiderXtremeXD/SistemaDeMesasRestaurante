@@ -108,4 +108,8 @@ public class UsuarioController {
             System.out.println("No se pudo eliminar el usuario con ID: " + idUsuario);
         }
     }
+    
+    public Usuario login(String nombreUsuario, String contrasena) {
+        return usuarioDao.login(nombreUsuario, contrasena);
+    }
 }

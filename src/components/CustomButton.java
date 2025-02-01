@@ -58,6 +58,8 @@ public class CustomButton extends JButton {
         setBackground(new Color(255, 255, 255));
         setForeground(new Color(80, 80, 80));
         rippleEffect.setRippleColor(new Color(220, 220, 220));
+        
+        setFont(getFont().deriveFont(java.awt.Font.BOLD));
     }
 
     @Override
