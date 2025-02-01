@@ -21,7 +21,6 @@ public class MySqlDAOFactory extends DAOFactory {
 
 	@Override
 	public IUsuarioDao getUsuario() {
-		// TODO Auto-generated method stub
 		return new UsuarioDaoImpl();
 	}
 }

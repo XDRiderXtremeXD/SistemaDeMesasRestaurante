@@ -13,6 +13,7 @@ import javax.swing.table.TableCellEditor;
 
 public class CustomButtonEditorTable extends AbstractCellEditor implements TableCellEditor, ActionListener {
     private JButton button;
+    @SuppressWarnings("unused")
     private ActionListener actionListener;
 
     public CustomButtonEditorTable(JButton button, ImageIcon icon, ActionListener actionListener) {

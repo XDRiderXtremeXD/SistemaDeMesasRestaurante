@@ -5,11 +5,9 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.TableModel;
 
 import controller.UsuarioController;
 import model.Usuario;
@@ -17,8 +15,6 @@ import model.Usuario;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -131,25 +127,21 @@ public class EditUsuarioView extends JFrame implements DocumentListener,ActionLi
 
 	@Override
 	public void changedUpdate(DocumentEvent arg0) {
-		// TODO Auto-generated method stub
 		ValidarCambioParametros();
 	}
 
 	@Override
 	public void insertUpdate(DocumentEvent arg0) {
-		// TODO Auto-generated method stub
 		ValidarCambioParametros();
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent arg0) {
-		// TODO Auto-generated method stub
 		ValidarCambioParametros();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		if (e.getSource() == comboBox)
 		ValidarCambioParametros();
 		
@@ -158,7 +150,6 @@ public class EditUsuarioView extends JFrame implements DocumentListener,ActionLi
 	}
 	
 	private void IncializarValores() {
-		// TODO Auto-generated method stub
 		textNombre.setText(user.getNombreUsuario());
 
 		String rol = user.getRol();
@@ -251,7 +242,6 @@ public class EditUsuarioView extends JFrame implements DocumentListener,ActionLi
 	}
 
 	private boolean ValidarNombre() {
-		// TODO Auto-generated method stub
 		String nombre = LeerNombre();
 
 		if (nombre.isEmpty()) {

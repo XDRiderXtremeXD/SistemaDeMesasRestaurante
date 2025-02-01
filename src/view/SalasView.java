@@ -1,15 +1,11 @@
 package view;
 
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 

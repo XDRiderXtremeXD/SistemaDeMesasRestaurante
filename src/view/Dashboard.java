@@ -10,7 +10,8 @@ import controller.PlatoController;
 import model.Usuario;
 
 public class Dashboard extends JFrame implements ActionListener {
-	private Usuario usuario;
+	@SuppressWarnings("unused")
+    private Usuario usuario;
 	private PlatoController platoController;
 
     private SalasView salasView;

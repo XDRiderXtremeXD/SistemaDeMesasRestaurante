@@ -355,7 +355,6 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 	}
 
 	private boolean ValidarCorreo() {
-		// TODO Auto-generated method stub
 		String correoElectronico = LeerCorreo();
 		if (correoElectronico.isEmpty()) {
 			lblCorreoError.setText("");
@@ -372,7 +371,6 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 	}
 
 	private boolean ValidarNombre() {
-		// TODO Auto-generated method stub
 		String nombre = LeerNombre();
 
 		if (nombre.isEmpty()) {
@@ -410,7 +408,6 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		if (e.getSource() == btnRegistrar) {
 			CrearUsuario();
 		}
@@ -418,7 +415,6 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 
 	@Override
 	public void changedUpdate(DocumentEvent e) {
-		// TODO Auto-generated method stub
 		if (e.getDocument() != textBuscador.getDocument())
 			ValidarCambioParametros();
 		else {
@@ -429,7 +425,6 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 
 	@Override
 	public void insertUpdate(DocumentEvent e) {
-		// TODO Auto-generated method stub
 		if (e.getDocument() != textBuscador.getDocument())
 			ValidarCambioParametros();
 		else {
@@ -440,7 +435,6 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
-		// TODO Auto-generated method stub
 		if (e.getDocument() != textBuscador.getDocument())
 			ValidarCambioParametros();
 		else {
@@ -450,12 +444,10 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 	}
 	
 	private String leerTextoBuscador() {
-		// TODO Auto-generated method stub
 		return textBuscador.getText().trim();
 	}
 
 	private void SetearFiltroBuscador(String nuevoFiltro) {
-		// TODO Auto-generated method stub
 		filtro=nuevoFiltro; ;
 	}
 
