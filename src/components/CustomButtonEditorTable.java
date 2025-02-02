@@ -12,7 +12,11 @@ import javax.swing.table.TableCellEditor;
 
 
 public class CustomButtonEditorTable extends AbstractCellEditor implements TableCellEditor, ActionListener {
-    private JButton button;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JButton button;
     @SuppressWarnings("unused")
     private ActionListener actionListener;
 

@@ -1,5 +1,7 @@
 package dao.factory;
 
+import dao.interfaces.IDetallePedidoDao;
+import dao.interfaces.IPedidoDao;
 import dao.interfaces.IPlatoDao;
 import dao.interfaces.ISalaDao;
 import dao.interfaces.IUsuarioDao;
@@ -12,6 +14,8 @@ public abstract class DAOFactory {
 	public abstract ISalaDao getSala();
 	public abstract IPlatoDao getPlato();
 	public abstract IUsuarioDao getUsuario();
+	public abstract IDetallePedidoDao getDetallePedido();
+	public abstract IPedidoDao getPedido();
 	
 	public static DAOFactory getDaoFactory(int tipo) {
 		switch (tipo) {
