@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Pedido {
@@ -7,7 +8,7 @@ public class Pedido {
 	private int idSala;
 	private int numeroMesa;
 	private Timestamp fecha;
-	private double total;
+	private BigDecimal total;
 	private String estado;
 	private String usuario;
 
@@ -43,11 +44,11 @@ public class Pedido {
 		this.fecha = fecha;
 	}
 
-	public double getTotal() {
+	public BigDecimal getTotal() {
 		return total;
 	}
 
-	public void setTotal(double total) {
+	public void setTotal(BigDecimal total) {
 		this.total = total;
 	}
 

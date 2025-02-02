@@ -227,6 +227,7 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private void CrearTabla(JScrollPane scrollPane) {
 		// Tabla de usuarios
 		table = new JTable(new DefaultTableModel(new Object[][] {},
