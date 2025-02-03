@@ -1,10 +1,13 @@
 	
-	package view;
-	import javax.swing.*;
-	import javax.swing.table.DefaultTableModel;
-	
-	import controller.PedidoController;
-	import model.Pedido;
+package view;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
+import components.CustomButtonEditorTable;
+import controller.PedidoController;
+import model.Pedido;
+import utils.ButtonRenderer;
 import utils.TiempoRenderer;
 
 import java.awt.event.ActionEvent;
@@ -27,8 +30,8 @@ public class PedidosActualesView extends JPanel {
     private boolean pendiente;
     private boolean entregado;
     private boolean finalizado;
+    private JScrollPane scrollPane;
 
-    @SuppressWarnings("serial")
 	public PedidosActualesView(boolean pendiente,boolean entregado,boolean finalizado) {
         setLayout(null);
         pedidoController = new PedidoController();
@@ -36,31 +39,59 @@ public class PedidosActualesView extends JPanel {
         this.entregado=entregado;
         this.finalizado=finalizado;
         
-        JScrollPane scrollPane = new JScrollPane();
+        scrollPane = new JScrollPane();
         scrollPane.setBounds(0, 0, 1430, 900);
         add(scrollPane);
         
-        tableModel = new DefaultTableModel(
-            new Object[][] {},
-            new String[] { "IdPedido", "Sala", "NumeroMesa", "Fecha", "Total", "Estado", "Usuario", "Tiempo", "Ver/Estado" }
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Hace que la tabla sea de solo lectura
-            }
-        };
-        
-        table = new JTable(tableModel);
-        scrollPane.setViewportView(table);
-        
+
+        CreacionTabla();
         InicializarTablaDatos();
         iniciarTimer();
     }
 
-    private void InicializarTablaDatos() {
-    	
-        List<Pedido> pedidos=pedidoController.listarPedidos(true,true,true);
+    public void CreacionTabla() {
+        tableModel = new DefaultTableModel(
+                new Object[][] {},
+                new String[] { "IdPedido", "Sala", "NumeroMesa", "Fecha", "Total", "Estado", "Usuario", "Tiempo", "Ver/Estado" }
+            ) {
+            	@Override
+    			public boolean isCellEditable(int row, int column) {
+    				return column == 8; 
+    			}
+            };
+            table = new JTable(tableModel);
+            table.setRowHeight(40); 
+    		// Rutas de los iconos
+    		String rutaIconoDetalle = "/resources/detalles.png";
+    		ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
+    				
+    		table.getColumn("Ver/Estado").setCellRenderer(new ButtonRenderer(iconoDetalle));
+    		table.getColumn("Ver/Estado").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
+    				e -> verDetallePedidoEstado(e, this))); 
+            
+            scrollPane.setViewportView(table);
+    }
+    
+    public void verDetallePedidoEstado(ActionEvent e, PedidosActualesView pedidoView) {
+        JButton sourceButton = (JButton) e.getSource();
+        int row = (int) sourceButton.getClientProperty("row");
+        int column = (int) sourceButton.getClientProperty("column");
+        JTable tabla = (JTable) sourceButton.getClientProperty("table");
+        TableModel model = tabla.getModel(); 
+        Object value = model.getValueAt(row, 0); 
+        System.out.println("Editando fila: " + row + ", columna: " + column+", valor: "+value.toString());
+        int idPedido=Integer.parseInt(value.toString());
+        Pedido pedido=pedidoController.obtenerPedido(idPedido);
         
+        DetallePedidoView frame = new DetallePedidoView(pedido,pedidoView);
+        frame.setLocationRelativeTo(pedidoView); 
+        frame.setVisible(true); 
+    }
+    
+    public void InicializarTablaDatos() {
+    	
+        List<Pedido> pedidos=pedidoController.listarPedidos(pendiente,entregado,finalizado);
+        tableModel.setRowCount(0);
         for (Pedido pedido : pedidos) {
             tableModel.addRow(new Object[] {
                 pedido.getIdPedido(),

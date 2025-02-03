@@ -20,7 +20,8 @@ public class PedidoController {
     }
     
     public List<Pedido> listarPedidos(boolean pendiente,boolean entregado,boolean finalizado) {
-        return listPedidos.stream()  
+    	listPedidos = pedidoDao.listPedidos();
+    	return listPedidos.stream()  
                           .filter(pedido -> (pendiente && pedido.getEstado().equals("Pendiente")) ||  (entregado && pedido.getEstado().equals("Entregado")) ||  (finalizado && pedido.getEstado().equals("Finalizado"))) 
                           .collect(Collectors.toList());
     }

@@ -57,4 +57,8 @@ public class DetallePedido {
 	public void setIdPedido(int idPedido) {
 		this.idPedido = idPedido;
 	}
+
+	public double getSubTotal() {
+	    return cantidad * precio.doubleValue();
+	}
 }
