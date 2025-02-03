@@ -15,13 +15,13 @@ public class MesasView extends JPanel {
     SalaController controlador;
 
     JTabbedPane tabbedPane;
-    PlatosView platosView;  // Asegúrate de que tienes esta clase
+    RealizarPedidoView realizarPedidoView;  // Asegúrate de que tienes esta clase
     private int cantidadMesas;
 
-    public MesasView(SalaController controlador,JTabbedPane tabbedPane, PlatosView platosView) {
+    public MesasView(SalaController controlador,JTabbedPane tabbedPane, RealizarPedidoView realizarPedidoView) {
         this.controlador = controlador;
     	this.tabbedPane = tabbedPane;
-        this.platosView = platosView;  // Inicializar la vista de platos
+        this.realizarPedidoView = realizarPedidoView;  // Inicializar la vista de platos
         initComponents();
     }
 
@@ -48,7 +48,7 @@ public class MesasView extends JPanel {
             btnMesa.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    tabbedPane.setSelectedComponent(platosView);  // Cambiar a la vista de platos
+                    tabbedPane.setSelectedComponent(realizarPedidoView);  // Cambiar a la vista de platos
                 }
             });
 
