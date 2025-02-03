@@ -5,6 +5,8 @@ import javax.swing.JTextArea;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
@@ -45,19 +47,18 @@ public class SalasView extends JPanel implements ActionListener {
     private JScrollPane scrollPane;
     private JTable tablaSalas;
     
-    ISalaDao salaDao = new SalaDaoImpl(); // Implementación concreta
-    SalaController controlador = new SalaController();
-    private PanelView panelView; // Instancia PanelView
-
-
+    SalaController controlador;
+    private Inicio inicioView;
+    private MesasView mesasView;
     /**
      * Create the panel.
      */
-    public SalasView(SalaController controlador) {
+    public SalasView(SalaController controlador, Inicio inicioView, MesasView mesasView) {
+        this.controlador = controlador;
+        this.inicioView = inicioView; 
+        this.mesasView = mesasView;
         initComponents();
         cargarDatosTabla();
-        panelView = new PanelView();
-        add(panelView); // Agregar el PanelView a la vista principal, ajustando su layout si es necesario
     }
     private void initComponents() {
         setSize(1100, 600);
@@ -109,19 +110,17 @@ public class SalasView extends JPanel implements ActionListener {
         btnNewButton_3.setBounds(203, 357, 85, 21);
         panel.add(btnNewButton_3);
 
-        // Campo de texto para Nombre
         txtNombre = new JTextField();
         txtNombre.setBounds(112, 122, 176, 19);
-        txtNombre.setBackground(Color.WHITE); // Fondo blanco (opcional)
+        txtNombre.setBackground(Color.WHITE); 
         txtNombre.setBorder(new MatteBorder(0, 0, 2, 0, Color.BLACK)); // Línea negra abajo
         txtNombre.setOpaque(false); // Sin fondo opaco
         txtNombre.setColumns(10);
         panel.add(txtNombre);
 
-        // Campo de texto para Mesas (con la línea abajo)
         txtMesas = new JTextField();
-        txtMesas.setBounds(112, 215, 176, 19); // Cambié la posición para que no se solapen
-        txtMesas.setBackground(Color.WHITE); // Fondo blanco (opcional)
+        txtMesas.setBounds(112, 215, 176, 19); 
+        txtMesas.setBackground(Color.WHITE); 
         txtMesas.setBorder(new MatteBorder(0, 0, 2, 0, Color.BLACK)); // Línea negra abajo
         txtMesas.setOpaque(false); // Sin fondo opaco
         txtMesas.setColumns(10);
@@ -139,6 +138,7 @@ public class SalasView extends JPanel implements ActionListener {
         		"ID", "NOMBRE", "MESAS"
         	}
         ));
+        //evento de poner los valores de la tabla en los txt
         tablaSalas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int filaSeleccionada = tablaSalas.getSelectedRow();
@@ -148,7 +148,7 @@ public class SalasView extends JPanel implements ActionListener {
                 }
             }
         });
-
+        //permite desplazamiento si hay muchas filas
         scrollPane.setViewportView(tablaSalas);
     }
 	public void actionPerformed(ActionEvent e) {
@@ -164,107 +164,84 @@ public class SalasView extends JPanel implements ActionListener {
 	}
 	
 	protected void actionPerformedBtnAgregar(ActionEvent e) {
-	    // Obtener los valores de los campos de texto
 	    String nombre = txtNombre.getText();
-	    int mesas = Integer.parseInt(txtMesas.getText());  // Convertir el número de mesas a entero
+	    int mesas = Integer.parseInt(txtMesas.getText()); 
 
-	    // Crear un objeto Sala
 	    Sala sala = new Sala(0, nombre, mesas);
-
-	    // Llamar al método registrarSala del controlador
-	    SalaController controlador = new SalaController();
 	    controlador.registrarSala(sala);
 
-	    // Agregar directamente la nueva fila a la tabla
 	    DefaultTableModel modelo = (DefaultTableModel) tablaSalas.getModel();
 	    modelo.addRow(new Object[]{sala.getIdSala(), sala.getNombre(), sala.getMesas()});
-
-	    // Limpiar los campos
-	    txtNombre.setText("");
-	    txtMesas.setText("");
-
-	    // Obtener el PanelView existente (suponiendo que la jerarquía de contenedores es correcta)
-	    PanelView panelView = (PanelView) getParent(); // Obtener el panel contenedor que tiene el PanelView
+	    limpiarDatos();
 	    
-	    if (panelView != null) {
-	        // Agregar la nueva sala al PanelView
-	        panelView.agregarSalaPanel(sala.getNombre());
-	        
-	        // Forzar la actualización del PanelView
-	        SwingUtilities.invokeLater(() -> {
-	            panelView.revalidate();
-	            panelView.repaint();
-	        });
+	    //AGREGAR AL PANEL
+	    if (inicioView != null) {
+	    	inicioView.agregarSalaPanel(sala);
+	        inicioView.revalidate();  // Revalidar para que el panel de la sala se actualice
+	        inicioView.repaint();  // Vuelve a pintar la vista
 	    } else {
-	        System.out.println("Error: No se encontró el PanelView.");
+	        System.out.println("Error: No se encontró la vista Inicio");
+	    }
+	    
+	 // Aquí es donde se pasa la cantidad de mesas a la vista de mesas
+	    if (mesasView != null) {
+	        mesasView.agregarMesasPanel(mesas);
+	        mesasView.revalidate();  // Asegurarse de que la vista de mesas se actualice
+	        mesasView.repaint();  // Vuelve a pintar la vista
+	    } else {
+	        System.out.println("Error: No se encontró la vista Mesas");
 	    }
 	}
 
 
-
-	
 	protected void actionPerformedBtnActualizar(ActionEvent e) {
-	    // Obtener la fila seleccionada de la tabla
 	    int filaSeleccionada = tablaSalas.getSelectedRow();
 	    if (filaSeleccionada >= 0) {
 	        // Obtener los valores de la fila seleccionada
 	        int idSala = Integer.parseInt(tablaSalas.getValueAt(filaSeleccionada, 0).toString());
-	        String nombre = txtNombre.getText();
+	        String nombreAntiguo = tablaSalas.getValueAt(filaSeleccionada, 1).toString();  // Nombre antiguo de la sala
+	        String nombreNuevo = txtNombre.getText();
 	        int mesas = Integer.parseInt(txtMesas.getText());
 
-	        // Crear un objeto Sala con los valores actualizados
-	        Sala sala = new Sala(idSala, nombre, mesas);
+	        Sala sala = new Sala(idSala, nombreNuevo, mesas);
+	        controlador.actualizarSala(sala);  
 
-	        // Llamar al método actualizarSala del controlador
-	        SalaController controlador = new SalaController();
-	        controlador.actualizarSala(sala);
-
-	        // Actualizar la tabla después de la actualización
 	        cargarDatosTabla();
-	        
-	        // Limpiar los campos de texto
-	        txtNombre.setText("");
-	        txtMesas.setText("");
+	        limpiarDatos();
+
+	        // ACTUALIZAR EN PANEL
+	        if (inicioView != null) {
+	            inicioView.actualizarSalaPanel(nombreAntiguo, nombreNuevo);  // Pasamos nombre antiguo y nombre nuevo
+	        }
 	    } else {
 	        System.out.println("Debe seleccionar una sala de la tabla para actualizar.");
 	    }
 	}
 
+
 	protected void actionPerformedBtnEliminar(ActionEvent e) {
-	    // Obtener la fila seleccionada de la tabla
 	    int filaSeleccionada = tablaSalas.getSelectedRow();
 	    if (filaSeleccionada >= 0) {
-	        // Obtener el ID de la sala seleccionada
 	        int idSala = Integer.parseInt(tablaSalas.getValueAt(filaSeleccionada, 0).toString());
-
-	        // Llamar al método eliminarSala del controlador
-	        SalaController controlador = new SalaController();
+	        String nombreSala = tablaSalas.getValueAt(filaSeleccionada, 1).toString(); // Obtener el nombre de la sala
 	        controlador.eliminarSala(idSala);
 
-	        // Actualizar la tabla después de la eliminación
 	        cargarDatosTabla();
+	        limpiarDatos();
+
+	        // ELIMINAR DEL PANEL
+	        if (inicioView != null) {
+	            inicioView.eliminarSalaDePanel(nombreSala);  
+	        }
 	    } else {
 	        System.out.println("Debe seleccionar una sala de la tabla para eliminar.");
 	    }
 	}
-	
-	private void cargarDatosTabla() {
-        DefaultTableModel modelo = (DefaultTableModel) tablaSalas.getModel();
-        modelo.setRowCount(0); 
-        try {
-            List<Sala> salas = controlador.listarSalas();
-            for (Sala sala : salas) {
-                modelo.addRow(new Object[]{sala.getIdSala(), sala.getNombre(), sala.getMesas()});
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al cargar los datos de la tabla: " + e.getMessage());
-        }
-    }
+
 
 	
 	
-	
+	//DEPURACIÓN
 	// Método para mostrar una lista de salas
     public static void mostrarSalas(List<Sala> salas) {
         // Implementación para mostrar las salas en una tabla
@@ -281,9 +258,31 @@ public class SalasView extends JPanel implements ActionListener {
         System.out.println("Nombre: " + sala.getNombre());
         System.out.println("Mesas: " + sala.getMesas());
     }
-
-    // Método para mostrar un mensaje al usuario
+    
+    
+    
+    //OTROS MÉTODOS
+    //Obtener los datos de la bd gracias al metodo list<>
+  	private void cargarDatosTabla() {
+          DefaultTableModel modelo = (DefaultTableModel) tablaSalas.getModel();
+          modelo.setRowCount(0); //limpia la tabla para evitar duplicados
+          try {
+              List<Sala> salas = controlador.listarSalas();
+              for (Sala sala : salas) {
+                  modelo.addRow(new Object[]{sala.getIdSala(), sala.getNombre(), sala.getMesas()});
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+              JOptionPane.showMessageDialog(null, "Error al cargar los datos de la tabla: " + e.getMessage());
+          }
+      }
+  
     public static void mostrarMensaje(String mensaje) {
         JOptionPane.showMessageDialog(null, mensaje);
+    }
+    
+    public void limpiarDatos() {
+    	txtNombre.setText("");
+        txtMesas.setText("");
     }
 }
