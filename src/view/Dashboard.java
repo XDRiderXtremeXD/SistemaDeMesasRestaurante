@@ -7,31 +7,37 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import controller.PlatoController;
+import controller.SalaController;
 import model.Usuario;
 
 public class Dashboard extends JFrame implements ActionListener {
-	@SuppressWarnings("unused")
-    private Usuario usuario;
+	private Usuario usuario;
 	private PlatoController platoController;
+    private SalaController salaController;
+
 
     private SalasView salasView;
+    private MesasView mesasView;
+    private Inicio inicioView;
+    
     private CartaDelDiaView cartaDelDia;
     private FinalizarPedidoView finalizarPedidoView;
     private PedidosActualesView pedidosActualesView;
     private HistorialPedidoView historialPedidoView;
-    private MesasView mesasView;
-    private PanelView panelView;
     private UsuariosView usuariosView;
     private PlatosView platosView;
     
+    // Crear botones
     private JButton btnCartaDelDia;
     private JButton btnSalas;
     private JButton btnPedidos;
-    private JButton btnPanel;
+    private JButton btnInicio;
     private JButton btnUsuarios;
     private JButton btnHistorialPedidos;
     
     private JTabbedPane tabbedPane;
+    
+
     
 
     private static final long serialVersionUID = 1L;
@@ -46,7 +52,9 @@ public class Dashboard extends JFrame implements ActionListener {
 
         // Usamos BorderLayout para la ventana principal
         getContentPane().setLayout(new BorderLayout());
-
+        
+        salaController = new SalaController();
+        
         // Panel lateral (izquierdo)
         JPanel sidePanel = new JPanel();
         sidePanel.setBackground(Color.WHITE);
@@ -85,19 +93,19 @@ public class Dashboard extends JFrame implements ActionListener {
         btnPedidos.setMaximumSize(buttonSize);
         btnPedidos.addActionListener(this);
 
-        btnPanel = new JButton("Panel");
-        btnPanel.setPreferredSize(buttonSize);
-        btnPanel.setMaximumSize(buttonSize);
-        btnPanel.addActionListener(this);
+        btnInicio = new JButton("Inicio");
+        btnInicio.setPreferredSize(buttonSize);
+        btnInicio.setMaximumSize(buttonSize);
+        btnInicio.addActionListener(this);
         
         btnUsuarios = new JButton("Usuarios");
         btnUsuarios.setPreferredSize(buttonSize);
         btnUsuarios.setMaximumSize(buttonSize);
         btnUsuarios.addActionListener(this);
-
+        
 
         // Añadir botones al panel lateral con espaciado uniforme
-        sidePanel.add(btnPanel);
+        sidePanel.add(btnInicio);
         sidePanel.add(Box.createVerticalStrut(50));
         sidePanel.add(btnPedidos);
         sidePanel.add(Box.createVerticalStrut(50));
@@ -117,17 +125,20 @@ public class Dashboard extends JFrame implements ActionListener {
         headerLabel.setForeground(Color.BLACK);
         headerLabel.setPreferredSize(new Dimension(100, 150));
         getContentPane().add(headerLabel, BorderLayout.NORTH);
-
+        
+     // Crear el controlador
         // Panel central con pestañas
         tabbedPane = new JTabbedPane();
-        panelView = new PanelView();
-        tabbedPane.addTab("Panel", null, panelView, null);
-        salasView = new SalasView(null);
-        tabbedPane.addTab("Salas", null, salasView, null);
-        mesasView = new MesasView();
-        tabbedPane.addTab("Mesas", null, mesasView, null);
         platosView = new PlatosView();
         tabbedPane.addTab("Platos", null, platosView, null);
+        mesasView = new MesasView(salaController,tabbedPane, platosView);
+        tabbedPane.addTab("Mesas", null, mesasView, null);
+        inicioView = new Inicio(salaController, mesasView, tabbedPane);
+        tabbedPane.addTab("Inicio", null, inicioView, null);
+        salasView = new SalasView(salaController, inicioView, mesasView);
+        tabbedPane.addTab("Salas", null, salasView, null);
+        
+        
         cartaDelDia = new CartaDelDiaView();
         tabbedPane.addTab("Carta del dia", null, cartaDelDia, null);
         platoController = new PlatoController(cartaDelDia);
@@ -175,8 +186,8 @@ public class Dashboard extends JFrame implements ActionListener {
 		if (e.getSource() == btnUsuarios) {
 			tabbedPane.setSelectedComponent(usuariosView);
 			}
-		if (e.getSource() == btnPanel) {
-			tabbedPane.setSelectedComponent(panelView);
+		if (e.getSource() == btnInicio) {
+			tabbedPane.setSelectedComponent(inicioView);
 			}
 	}
 }
