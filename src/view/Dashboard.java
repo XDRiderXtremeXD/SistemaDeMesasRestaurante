@@ -133,7 +133,7 @@ public class Dashboard extends JFrame implements ActionListener {
         platoController = new PlatoController(cartaDelDia);
         usuariosView = new UsuariosView();
         tabbedPane.addTab("Usuarios", null, usuariosView, null);   
-        pedidosActualesView = new PedidosActualesView();
+        pedidosActualesView = new PedidosActualesView(true,true,false);
         tabbedPane.addTab("Pedidos Actuales", null, pedidosActualesView, null);
         historialPedidoView = new HistorialPedidoView();
         tabbedPane.addTab("Historial Pedidos", null, historialPedidoView, null);

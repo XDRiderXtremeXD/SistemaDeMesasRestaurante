@@ -18,20 +18,10 @@ public class PedidoController {
         this.pedidoDao = daoFactory.getPedido();
         listPedidos = pedidoDao.listPedidos();
     }
-
-    public List<Pedido> listarPedidos() {
-        return listPedidos;
-    }
     
-    public List<Pedido> listarPedidos(String estado1) {
+    public List<Pedido> listarPedidos(boolean pendiente,boolean entregado,boolean finalizado) {
         return listPedidos.stream()  
-                          .filter(pedido -> pedido.getEstado().equals(estado1))  
-                          .collect(Collectors.toList());
-    }
-    
-    public List<Pedido> listarPedidos(String estado1,String estado2) {
-        return listPedidos.stream()  
-                          .filter(pedido -> (pedido.getEstado().equals(estado1)) ||  (pedido.getEstado().equals(estado2))) 
+                          .filter(pedido -> (pendiente && pedido.getEstado().equals("Pendiente")) ||  (entregado && pedido.getEstado().equals("Entregado")) ||  (finalizado && pedido.getEstado().equals("Finalizado"))) 
                           .collect(Collectors.toList());
     }
 
