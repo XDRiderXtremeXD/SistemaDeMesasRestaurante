@@ -185,5 +185,47 @@ public class DetallePedidoDaoImpl implements IDetallePedidoDao{
         }
         return success;
     }
+    
+    @Override
+    public List<DetallePedido> listDetallePedidoById(int idPedido) {
+        List<DetallePedido> lista = new ArrayList<>();
+        Connection cn = null;
+        PreparedStatement psm = null;
+        ResultSet rs = null;
+        
+        try {
+            cn = MySqlConexion.getConexion();
+            // SQL para obtener los detalles de un pedido por IdPedido
+            String sql = "SELECT IdDetallePedido, NombreProducto, Precio, Cantidad, Comentario, PedidoId FROM DetallePedido WHERE PedidoId = ?";
+            psm = cn.prepareStatement(sql);
+            psm.setInt(1, idPedido);  // Establece el valor del IdPedido
+            
+            rs = psm.executeQuery();
+            
+            while (rs.next()) {
+                DetallePedido detalle = new DetallePedido();
+                detalle.setIdDetallePedido(rs.getInt("IdDetallePedido"));
+                detalle.setNombreProducto(rs.getString("NombreProducto"));
+                detalle.setPrecio(rs.getBigDecimal("Precio"));
+                detalle.setCantidad(rs.getInt("Cantidad"));
+                detalle.setComentario(rs.getString("Comentario"));
+                detalle.setIdPedido(rs.getInt("PedidoId"));
+                
+                lista.add(detalle);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (psm != null) psm.close();
+                if (cn != null) cn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return lista;
+    }
+
 }
 

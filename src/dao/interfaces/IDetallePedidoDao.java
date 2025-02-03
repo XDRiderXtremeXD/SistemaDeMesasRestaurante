@@ -10,4 +10,5 @@ public interface IDetallePedidoDao {
 	boolean createDetallePedido(DetallePedido detallePedido);
 	boolean updateDetallePedido(DetallePedido detallePedido);
 	boolean deleteDetallePedido(int id);
+	List<DetallePedido> listDetallePedidoById(int idPedido);
 }

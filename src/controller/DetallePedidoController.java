@@ -68,4 +68,15 @@ public class DetallePedidoController {
             System.out.println("No se pudo eliminar el detalle de pedido con ID: " + idDetallePedido);
         }
     }
+    
+    public List<DetallePedido> listarDetallePedidosPorPedido(int idPedido) {
+        List<DetallePedido> detallePedidos = detallePedidoDao.listDetallePedidoById(idPedido);
+        if (detallePedidos.isEmpty()) {
+            System.out.println("No se encontraron detalles de pedido para el ID: " + idPedido);
+        } else {
+            System.out.println("Detalles de pedido encontrados para el ID: " + idPedido);
+        }
+        return detallePedidos;
+    }
+
 }
