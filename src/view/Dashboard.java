@@ -25,7 +25,7 @@ public class Dashboard extends JFrame implements ActionListener {
     private PedidosActualesView pedidosActualesView;
     private HistorialPedidoView historialPedidoView;
     private UsuariosView usuariosView;
-    private PlatosView platosView;
+    private RealizarPedidoView realizarPedidoView;
     
     // Crear botones
     private JButton btnCartaDelDia;
@@ -129,9 +129,9 @@ public class Dashboard extends JFrame implements ActionListener {
      // Crear el controlador
         // Panel central con pestañas
         tabbedPane = new JTabbedPane();
-        platosView = new PlatosView();
-        tabbedPane.addTab("Platos", null, platosView, null);
-        mesasView = new MesasView(salaController,tabbedPane, platosView);
+        realizarPedidoView = new RealizarPedidoView();
+        tabbedPane.addTab("Realizar Pedidos", null, realizarPedidoView, null);
+        mesasView = new MesasView(salaController,tabbedPane, realizarPedidoView);
         tabbedPane.addTab("Mesas", null, mesasView, null);
         inicioView = new Inicio(salaController, mesasView, tabbedPane);
         tabbedPane.addTab("Inicio", null, inicioView, null);
