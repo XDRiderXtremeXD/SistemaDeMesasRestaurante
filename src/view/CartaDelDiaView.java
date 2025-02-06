@@ -24,9 +24,8 @@ public class CartaDelDiaView extends JPanel {
     private CustomTextField txtNombre;
     private CustomTextField txtPrecio;
 
-    public CartaDelDiaView() {
+    public CartaDelDiaView(List<Plato> platos) {	
         setPreferredSize(new Dimension(1427, 675));
-
         setLayout(new BorderLayout());
 
         String[] columnNames = {"ID", "Nombre", "Precio", "Fecha"};
@@ -51,6 +50,8 @@ public class CartaDelDiaView extends JPanel {
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
         tablaPanel.add(scrollPane, BorderLayout.CENTER);
 
+        listar(platos);
+        
         JPanel formularioPanel = new JPanel();
         formularioPanel.setBackground(SystemColor.textHighlightText);
         formularioPanel.setLayout(null);
@@ -177,14 +178,26 @@ public class CartaDelDiaView extends JPanel {
                 nuevoPlato.setPrecio(precio);
                 nuevoPlato.setFecha(fecha);
 
-                PlatoController platoController = new PlatoController(this);
-                platoController.crearPlato(nuevoPlato);
-
-                platoController.listarPlatos();
+                PlatoController platoController = new PlatoController();
                 
+                Plato platoCreado = platoController.crear(nuevoPlato);
+
+                if (platoCreado != null) {
+                    DecimalFormat decimalFormat = new DecimalFormat("#.00");
+                    Object[] row = new Object[4];
+                    row[0] = platoCreado.getIdPlato();
+                    row[1] = platoCreado.getNombre();
+                    row[2] = "S/. " + decimalFormat.format(platoCreado.getPrecio());
+                    row[3] = platoCreado.getFecha();
+                    tableModel.addRow(row);
+                    
+                    CustomAlert.showAlert("Éxito", "El plato ha sido agregado correctamente", "success");
+                } else {
+                    CustomAlert.showAlert("Error", "No se pudo agregar el plato", "error");
+                }
+
                 txtNombre.setText("");
                 txtPrecio.setText("");
-                
                 txtNombre.restorePlaceholder();
                 txtPrecio.restorePlaceholder();
 
@@ -214,15 +227,20 @@ public class CartaDelDiaView extends JPanel {
         btnEliminar.addActionListener(e -> {
             int[] filasSeleccionadas = tablaPlatos.getSelectedRows();
             if (filasSeleccionadas.length > 0) {
-                PlatoController platoController = new PlatoController(this);
-
+                PlatoController platoController = new PlatoController();
+                
                 for (int i = filasSeleccionadas.length - 1; i >= 0; i--) {
                     int fila = filasSeleccionadas[i];
                     int idPlato = (int) tableModel.getValueAt(fila, 0);
-                    platoController.eliminarPlato(idPlato);
-                }
 
-                platoController.listarPlatos();
+                    boolean eliminado = platoController.eliminar(idPlato);
+                    if (eliminado) {
+                    	CustomAlert.showAlert("Éxito", "El plato ha sido eliminado correctamente", "success");
+                        tableModel.removeRow(fila);
+                    } else {
+                    	CustomAlert.showAlert("Error", "No se pudo eliminar el plato", "error");
+                    }
+                }
             }
         });
 
@@ -244,7 +262,7 @@ public class CartaDelDiaView extends JPanel {
         add(formularioPanel, BorderLayout.EAST);
     }
 
-    public void listarTablaPlatos(List<Plato> platos) {
+    public void listar(List<Plato> platos) {
         tableModel.setRowCount(0);
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
 

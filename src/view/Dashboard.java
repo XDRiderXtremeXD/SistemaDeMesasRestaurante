@@ -15,7 +15,6 @@ public class Dashboard extends JFrame implements ActionListener {
 	private PlatoController platoController;
     private SalaController salaController;
 
-
     private SalasView salasView;
     private MesasView mesasView;
     private Inicio inicioView;
@@ -44,6 +43,7 @@ public class Dashboard extends JFrame implements ActionListener {
 
     public Dashboard(Usuario usuario) {  
     	this.usuario = usuario;
+    	platoController = new PlatoController();
     	
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1600, 900);
@@ -126,10 +126,10 @@ public class Dashboard extends JFrame implements ActionListener {
         headerLabel.setPreferredSize(new Dimension(100, 150));
         getContentPane().add(headerLabel, BorderLayout.NORTH);
         
-     // Crear el controlador
+        // Crear el controlador
         // Panel central con pestañas
         tabbedPane = new JTabbedPane();
-        realizarPedidoView = new RealizarPedidoView();
+        realizarPedidoView = new RealizarPedidoView(platoController.listar());
         tabbedPane.addTab("Realizar Pedidos", null, realizarPedidoView, null);
         mesasView = new MesasView(salaController,tabbedPane, realizarPedidoView);
         tabbedPane.addTab("Mesas", null, mesasView, null);
@@ -137,11 +137,9 @@ public class Dashboard extends JFrame implements ActionListener {
         tabbedPane.addTab("Inicio", null, inicioView, null);
         salasView = new SalasView(salaController, inicioView, mesasView);
         tabbedPane.addTab("Salas", null, salasView, null);
-        
-        
-        cartaDelDia = new CartaDelDiaView();
+                
+        cartaDelDia = new CartaDelDiaView(platoController.listar());
         tabbedPane.addTab("Carta del dia", null, cartaDelDia, null);
-        platoController = new PlatoController(cartaDelDia);
         usuariosView = new UsuariosView();
         tabbedPane.addTab("Usuarios", null, usuariosView, null);   
         pedidosActualesView = new PedidosActualesView(true,true,false);
@@ -171,7 +169,7 @@ public class Dashboard extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnCartaDelDia) {
-            platoController.listarPlatos();
+			cartaDelDia.listar(platoController.listar());
             tabbedPane.setSelectedComponent(cartaDelDia);
         	}
 		if (e.getSource() == btnSalas) {
