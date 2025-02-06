@@ -107,12 +107,12 @@ public class DetallePedidoView extends JFrame {
 		if(pedidoView==null)
 			return;        
         
-        String textoBotonEstado="";
+		String nuevoEstado="";
         if(pedido.getEstado().contentEquals("Pendiente") )
-        	textoBotonEstado="Entregado";
+        	nuevoEstado="Entregado";
         if(pedido.getEstado().contentEquals("Entregado") )
-        	textoBotonEstado="Finalizado";
-        if(textoBotonEstado=="")
+        	nuevoEstado="Finalizado";
+        if(nuevoEstado=="")
         	return;
         
         
@@ -124,7 +124,7 @@ public class DetallePedidoView extends JFrame {
         lblEstado_1.setBounds(0, 540, 113, 30);
         contentPane.add(lblEstado_1);
         
-        JButton btnCambiarEstado = new JButton(textoBotonEstado);
+        JButton btnCambiarEstado = new JButton(nuevoEstado);
         btnCambiarEstado.setForeground(new Color(0, 128, 255));
         btnCambiarEstado.setFont(new Font("Verdana", Font.PLAIN, 14));
         btnCambiarEstado.setBounds(123, 540, 143, 30);
@@ -134,8 +134,8 @@ public class DetallePedidoView extends JFrame {
         btnCambiarEstado.addActionListener(e -> {
             // Actualizar el estado del pedido
             PedidoController pedidoController=new PedidoController();
-            String nuevoEstado=btnCambiarEstado.getText();
-            pedido.setEstado(nuevoEstado);
+            String nuevoEstadoPedido=btnCambiarEstado.getText();
+            pedido.setEstado(nuevoEstadoPedido);
             pedidoController.actualizarPedido(pedido);
             pedidoView.InicializarTablaDatos();
             this.dispose();
