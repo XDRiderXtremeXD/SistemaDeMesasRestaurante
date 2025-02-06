@@ -195,6 +195,7 @@ public class Login extends JFrame {
     private void redirectToDashboard(Usuario usuario) {
         Dashboard dashboard = new Dashboard(usuario);
         dashboard.setVisible(true);
+        GlassPanePopup.install(dashboard);
         this.dispose();
     }
     
