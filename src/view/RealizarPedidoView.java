@@ -23,11 +23,11 @@ import java.text.DecimalFormat;
 public class RealizarPedidoView extends JPanel {
     private static final long serialVersionUID = 1L;
     private JTable tablaPedidos, tablaPlatos;
-    private DefaultTableModel tableModel, tableModelDerecho;
+    private DefaultTableModel tableModelPedidos, tableModelPlatos;
     private CustomTextField txtComentario, txtBuscar;
-    private CustomButton btnAgregarComen, btnEliminar, btnRealizarPedido, btnAgregar;
-    private JScrollPane scrollPane;
-    private JLabel lblMonto;
+    private CustomButton btnAgregarComen, btnEliminarPedido, btnRealizarPedido, btnAgregarPlato;
+    private JScrollPane scrollPanePedidos, scrollPanePlatos;
+    private JLabel lblMontoPagar;
     private Map<Integer, Integer> mapIdPedidoPlato = new HashMap<>();
 
     public RealizarPedidoView(List<Plato> platos) {
@@ -41,11 +41,11 @@ public class RealizarPedidoView extends JPanel {
         panelIzquierdo.setLayout(new BoxLayout(panelIzquierdo, BoxLayout.Y_AXIS));
 
         // Título "Comentarios"
-        JLabel lblTitulo = new JLabel("Realizar Pedido", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
-        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel lblPedido = new JLabel("Realizar Pedido", SwingConstants.CENTER);
+        lblPedido.setFont(new Font("Arial", Font.BOLD, 18));
+        lblPedido.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelIzquierdo.add(Box.createVerticalStrut(20));
-        panelIzquierdo.add(lblTitulo);
+        panelIzquierdo.add(lblPedido);
         panelIzquierdo.add(Box.createVerticalStrut(15));
 
         // Comentario (campo de texto)
@@ -66,18 +66,18 @@ public class RealizarPedidoView extends JPanel {
         
         btnAgregarComen.addActionListener(e -> agregarComentarioAlPedido());
 
-        btnEliminar = new CustomButton();
-        btnEliminar.setText("Eliminar");
-        btnEliminar.setFocusPainted(false);
-        btnEliminar.setBackground(new java.awt.Color(253, 83, 83));
-        btnEliminar.setForeground(new java.awt.Color(245, 245, 245));
-        btnEliminar.setRippleColor(new java.awt.Color(255, 255, 255));
-        btnEliminar.setShadowColor(new java.awt.Color(253, 83, 83));
-        btnEliminar.setEnabled(false);
-        btnEliminar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnEliminar.setPreferredSize(new Dimension(90, 38));
+        btnEliminarPedido = new CustomButton();
+        btnEliminarPedido.setText("Eliminar");
+        btnEliminarPedido.setFocusPainted(false);
+        btnEliminarPedido.setBackground(new java.awt.Color(253, 83, 83));
+        btnEliminarPedido.setForeground(new java.awt.Color(245, 245, 245));
+        btnEliminarPedido.setRippleColor(new java.awt.Color(255, 255, 255));
+        btnEliminarPedido.setShadowColor(new java.awt.Color(253, 83, 83));
+        btnEliminarPedido.setEnabled(false);
+        btnEliminarPedido.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnEliminarPedido.setPreferredSize(new Dimension(90, 38));
         
-        btnEliminar.addActionListener(e -> eliminarPlatoDelPedido());
+        btnEliminarPedido.addActionListener(e -> eliminarPlatoDelPedido());
 
         // Panel para el comentario y los dos botones
         JPanel panelComentario = new JPanel();
@@ -86,24 +86,24 @@ public class RealizarPedidoView extends JPanel {
 
         txtComentario.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         btnAgregarComen.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        btnEliminar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        btnEliminarPedido.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
         panelComentario.add(Box.createRigidArea(new Dimension(90, 0)));
         panelComentario.add(txtComentario);
         panelComentario.add(Box.createRigidArea(new Dimension(10, 0)));
         panelComentario.add(btnAgregarComen);
         panelComentario.add(Box.createRigidArea(new Dimension(10, 0)));
-        panelComentario.add(btnEliminar);
+        panelComentario.add(btnEliminarPedido);
         panelComentario.add(Box.createRigidArea(new Dimension(90, 0)));
 
         panelIzquierdo.add(panelComentario);
 
         // Tabla de Pedidos
         String[] columnNames = {"ID", "Plato", "Precio", "Cant", "SubTotal", "Comentario"};
-        tableModel = new DefaultTableModel(columnNames, 0);
-        tablaPedidos = new JTable(tableModel);
-        scrollPane = new JScrollPane(tablaPedidos);
-        CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
+        tableModelPedidos = new DefaultTableModel(columnNames, 0);
+        tablaPedidos = new JTable(tableModelPedidos);
+        scrollPanePedidos = new JScrollPane(tablaPedidos);
+        CustomTable.TableCustom.apply(scrollPanePedidos, CustomTable.TableCustom.TableType.DEFAULT);
         
         tablaPedidos.setDefaultEditor(Object.class, null);
         tablaPedidos.getTableHeader().setResizingAllowed(false);
@@ -116,17 +116,17 @@ public class RealizarPedidoView extends JPanel {
         tablaPedidos.getColumnModel().getColumn(5).setPreferredWidth(200);
 
         // Panel contenedor para la tabla
-        JPanel panelTablaIzquierda = new JPanel();
+        JPanel panelTablaPedidos = new JPanel();
         panelIzquierdo.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(211, 211, 211)));
-        panelTablaIzquierda.setBackground(SystemColor.textHighlightText);
-        panelTablaIzquierda.setLayout(new BoxLayout(panelTablaIzquierda, BoxLayout.X_AXIS));
+        panelTablaPedidos.setBackground(SystemColor.textHighlightText);
+        panelTablaPedidos.setLayout(new BoxLayout(panelTablaPedidos, BoxLayout.X_AXIS));
         
-        panelTablaIzquierda.add(Box.createRigidArea(new Dimension(30, 0)));
-        panelTablaIzquierda.add(scrollPane);
-        panelTablaIzquierda.add(Box.createRigidArea(new Dimension(30, 0)));
+        panelTablaPedidos.add(Box.createRigidArea(new Dimension(30, 0)));
+        panelTablaPedidos.add(scrollPanePedidos);
+        panelTablaPedidos.add(Box.createRigidArea(new Dimension(30, 0)));
 
         panelIzquierdo.add(Box.createVerticalStrut(15));
-        panelIzquierdo.add(panelTablaIzquierda);
+        panelIzquierdo.add(panelTablaPedidos);
         panelIzquierdo.add(Box.createVerticalStrut(10));
         
         tablaPedidos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -137,7 +137,7 @@ public class RealizarPedidoView extends JPanel {
                 if (!e.getValueIsAdjusting()) {
                 	veriConBtnAgregarCom();
                 	actuTextoBtnComen();
-                    btnEliminar.setEnabled(tablaPedidos.getSelectedRow() != -1);
+                    btnEliminarPedido.setEnabled(tablaPedidos.getSelectedRow() != -1);
                 }
             }
         });
@@ -172,9 +172,9 @@ public class RealizarPedidoView extends JPanel {
         lblTotal.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         // Label monto "00.00"
-        lblMonto = new JLabel("S/. 00,00");
-        lblMonto.setFont(new Font("Arial", Font.BOLD, 24));
-        lblMonto.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        lblMontoPagar = new JLabel("S/. 00,00");
+        lblMontoPagar.setFont(new Font("Arial", Font.BOLD, 24));
+        lblMontoPagar.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         // Botón Realizar Pedido
         btnRealizarPedido = new CustomButton();
@@ -200,7 +200,7 @@ public class RealizarPedidoView extends JPanel {
         panelTotal.add(Box.createVerticalStrut(10));
         panelTotal.add(lblTotal);
         panelTotal.add(Box.createVerticalStrut(5));
-        panelTotal.add(lblMonto);
+        panelTotal.add(lblMontoPagar);
         panelTotal.add(Box.createVerticalStrut(10));
         panelTotal.add(btnRealizarPedido);
         panelTotal.add(Box.createVerticalStrut(10));
@@ -226,11 +226,11 @@ public class RealizarPedidoView extends JPanel {
         panelDerecho.setLayout(new BoxLayout(panelDerecho, BoxLayout.Y_AXIS));
 
         // Título "Carta del Día"
-        JLabel lblTituloDerecho = new JLabel("Carta del Día", SwingConstants.CENTER);
-        lblTituloDerecho.setFont(new Font("Arial", Font.BOLD, 18));
-        lblTituloDerecho.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel lblPlato = new JLabel("Carta del Día", SwingConstants.CENTER);
+        lblPlato.setFont(new Font("Arial", Font.BOLD, 18));
+        lblPlato.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelDerecho.add(Box.createVerticalStrut(20));
-        panelDerecho.add(lblTituloDerecho);
+        panelDerecho.add(lblPlato);
         panelDerecho.add(Box.createVerticalStrut(15));
 
         // Campo de búsqueda
@@ -255,40 +255,40 @@ public class RealizarPedidoView extends JPanel {
         });
 
         // Botón Agregar
-        btnAgregar = new CustomButton();
-        btnAgregar.setText("Agregar");
-        btnAgregar.setFocusPainted(false);
-        btnAgregar.setBackground(new java.awt.Color(30, 180, 114));
-        btnAgregar.setForeground(new java.awt.Color(245, 245, 245));
-        btnAgregar.setRippleColor(new java.awt.Color(255, 255, 255));
-        btnAgregar.setShadowColor(new java.awt.Color(30, 180, 114));
-        btnAgregar.setEnabled(false);
-        btnAgregar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnAgregar.setPreferredSize(new Dimension(90, 38)); 
+        btnAgregarPlato = new CustomButton();
+        btnAgregarPlato.setText("Agregar");
+        btnAgregarPlato.setFocusPainted(false);
+        btnAgregarPlato.setBackground(new java.awt.Color(30, 180, 114));
+        btnAgregarPlato.setForeground(new java.awt.Color(245, 245, 245));
+        btnAgregarPlato.setRippleColor(new java.awt.Color(255, 255, 255));
+        btnAgregarPlato.setShadowColor(new java.awt.Color(30, 180, 114));
+        btnAgregarPlato.setEnabled(false);
+        btnAgregarPlato.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnAgregarPlato.setPreferredSize(new Dimension(90, 38)); 
 
-        btnAgregar.addActionListener(e -> agregarPlatoAlPedido());
+        btnAgregarPlato.addActionListener(e -> agregarPlatoAlPedido());
         
         JPanel panelBusqueda = new JPanel();
         panelBusqueda.setBackground(SystemColor.textHighlightText);
         panelBusqueda.setLayout(new BoxLayout(panelBusqueda, BoxLayout.X_AXIS));
 
         txtBuscar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        btnAgregar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        btnAgregarPlato.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
         panelBusqueda.add(Box.createRigidArea(new Dimension(150, 0)));
         panelBusqueda.add(txtBuscar);
         panelBusqueda.add(Box.createRigidArea(new Dimension(10, 0)));
-        panelBusqueda.add(btnAgregar);
+        panelBusqueda.add(btnAgregarPlato);
         panelBusqueda.add(Box.createRigidArea(new Dimension(150, 0)));
 
         panelDerecho.add(panelBusqueda);
 
         // Tabla de Carta del Día
         String[] columnNamesDerecho = {"ID", "Plato", "Precio"};
-        tableModelDerecho = new DefaultTableModel(columnNamesDerecho, 0);
-        tablaPlatos = new JTable(tableModelDerecho);
-        JScrollPane scrollPaneDerecho = new JScrollPane(tablaPlatos);
-        CustomTable.TableCustom.apply(scrollPaneDerecho, CustomTable.TableCustom.TableType.DEFAULT);
+        tableModelPlatos = new DefaultTableModel(columnNamesDerecho, 0);
+        tablaPlatos = new JTable(tableModelPlatos);
+        scrollPanePlatos = new JScrollPane(tablaPlatos);
+        CustomTable.TableCustom.apply(scrollPanePlatos, CustomTable.TableCustom.TableType.DEFAULT);
         
         tablaPlatos.setDefaultEditor(Object.class, null);
         tablaPlatos.getTableHeader().setResizingAllowed(false);
@@ -300,16 +300,16 @@ public class RealizarPedidoView extends JPanel {
         listar(platos);
 
         // Panel contenedor para la tabla derecha
-        JPanel panelTablaDerecha = new JPanel();
-        panelTablaDerecha.setBackground(SystemColor.textHighlightText);
-        panelTablaDerecha.setLayout(new BoxLayout(panelTablaDerecha, BoxLayout.X_AXIS));
+        JPanel panelTablaPlatos = new JPanel();
+        panelTablaPlatos.setBackground(SystemColor.textHighlightText);
+        panelTablaPlatos.setLayout(new BoxLayout(panelTablaPlatos, BoxLayout.X_AXIS));
         
-        panelTablaDerecha.add(Box.createRigidArea(new Dimension(30, 0)));
-        panelTablaDerecha.add(scrollPaneDerecho);
-        panelTablaDerecha.add(Box.createRigidArea(new Dimension(30, 0)));
+        panelTablaPlatos.add(Box.createRigidArea(new Dimension(30, 0)));
+        panelTablaPlatos.add(scrollPanePlatos);
+        panelTablaPlatos.add(Box.createRigidArea(new Dimension(30, 0)));
 
         panelDerecho.add(Box.createVerticalStrut(15));
-        panelDerecho.add(panelTablaDerecha);
+        panelDerecho.add(panelTablaPlatos);
         panelDerecho.add(Box.createVerticalStrut(20));
 
         tablaPlatos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -319,9 +319,9 @@ public class RealizarPedidoView extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     if (tablaPlatos.getSelectedRow() != -1) {
-                        btnAgregar.setEnabled(true);
+                        btnAgregarPlato.setEnabled(true);
                     } else {
-                        btnAgregar.setEnabled(false);
+                        btnAgregarPlato.setEnabled(false);
                     }
                 }
             }
@@ -434,7 +434,7 @@ public class RealizarPedidoView extends JPanel {
                 nuevoPedido[3] = 1;
                 nuevoPedido[4] = convertirDoubleAString(precioPlato);
                 nuevoPedido[5] = "";
-                tableModel.addRow(nuevoPedido);
+                tableModelPedidos.addRow(nuevoPedido);
 
                 mapIdPedidoPlato.put(idPedido, idPlato);
             }
@@ -452,14 +452,14 @@ public class RealizarPedidoView extends JPanel {
             total += convertirStringADouble(subtotalStr);
         }
 
-        lblMonto.setText(convertirDoubleAString(total));
+        lblMontoPagar.setText(convertirDoubleAString(total));
     }
     
     private void agregarComentarioAlPedido() {
         int selectedRow = tablaPedidos.getSelectedRow();
         if (selectedRow != -1) {
             String comentario = txtComentario.getText().trim();
-            tableModel.setValueAt(comentario, selectedRow, 5);
+            tableModelPedidos.setValueAt(comentario, selectedRow, 5);
             txtComentario.setText("");
             btnAgregarComen.setEnabled(false);
             btnAgregarComen.setText("Agregar");
@@ -469,7 +469,7 @@ public class RealizarPedidoView extends JPanel {
     private void eliminarPlatoDelPedido() {
         int selectedRow = tablaPedidos.getSelectedRow();
         if (selectedRow != -1) {
-            tableModel.removeRow(selectedRow);
+        	tableModelPedidos.removeRow(selectedRow);
             reordenarIdsPedidos();
             actualizarTotal();
             actualizarBtnRealizarPedido();
@@ -477,9 +477,9 @@ public class RealizarPedidoView extends JPanel {
     }
     
     private void reordenarIdsPedidos() {
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            tableModel.setValueAt(i + 1, i, 0);
-            mapIdPedidoPlato.put(i + 1, (int) tableModel.getValueAt(i, 0));
+        for (int i = 0; i < tableModelPedidos.getRowCount(); i++) {
+        	tableModelPedidos.setValueAt(i + 1, i, 0);
+            mapIdPedidoPlato.put(i + 1, (int) tableModelPedidos.getValueAt(i, 0));
         }
     }
     
@@ -501,7 +501,7 @@ public class RealizarPedidoView extends JPanel {
     private void actuTextoBtnComen() {
         int selectedRow = tablaPedidos.getSelectedRow();
         if (selectedRow != -1) {
-            String comentarioExistente = (String) tableModel.getValueAt(selectedRow, 5);
+            String comentarioExistente = (String) tableModelPedidos.getValueAt(selectedRow, 5);
             if (comentarioExistente != null && !comentarioExistente.trim().isEmpty()) {
                 btnAgregarComen.setText("Actualizar");
             } else {
@@ -513,7 +513,7 @@ public class RealizarPedidoView extends JPanel {
     private void realizarPedido() {
     	CustomAlert.showAlert("Éxito", "El Pedido se ha realizado con éxito", "success");
 
-        tableModel.setRowCount(0);
+    	tableModelPedidos.setRowCount(0);
         tablaPlatos.getSelectionModel().clearSelection();
 
         txtComentario.setText("");
@@ -525,6 +525,6 @@ public class RealizarPedidoView extends JPanel {
 
         mapIdPedidoPlato.clear();
 
-        lblMonto.setText("S/. 00,00");
+        lblMontoPagar.setText("S/. 00,00");
     }
 }
