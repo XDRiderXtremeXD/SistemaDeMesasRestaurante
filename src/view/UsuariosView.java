@@ -242,8 +242,8 @@ public class UsuariosView extends JPanel implements ActionListener, DocumentList
 		table.setRowHeight(40); 
 
 		// Rutas de los iconos
-		String rutaIconoEditar = "/resources/editar.png";
-		String rutaIconoEliminar = "/resources/eliminar.png";
+		String rutaIconoEditar = "/imgs/editar.png";
+		String rutaIconoEliminar = "/imgs/eliminar.png";
 
 		ImageIcon iconoEditar = new ImageIcon(getClass().getResource(rutaIconoEditar));
 		ImageIcon iconoEliminar = new ImageIcon(getClass().getResource(rutaIconoEliminar));

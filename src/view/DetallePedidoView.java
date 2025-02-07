@@ -137,7 +137,7 @@ public class DetallePedidoView extends JFrame {
             String nuevoEstadoPedido=btnCambiarEstado.getText();
             pedido.setEstado(nuevoEstadoPedido);
             pedidoController.actualizarPedido(pedido);
-            pedidoView.InicializarTablaDatos();
+            pedidoView.inicializarTablaDatos();
             this.dispose();
         });
         
