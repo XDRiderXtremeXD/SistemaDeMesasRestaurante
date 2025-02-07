@@ -200,6 +200,13 @@ public class CustomTable {
             setBorder(new EmptyBorder(8, 10, 8, 10));
             com.setFont(table.getTableHeader().getFont());
             com.setBackground(table.getTableHeader().getBackground());
+            
+         // Aplicar el fondo verde oscuro y el texto en blanco y en mayúsculas
+            com.setBackground(new Color(0, 51, 0));  // Verde oscuro
+            com.setForeground(Color.WHITE);  // Texto blanco
+            label.setHorizontalAlignment(SwingConstants.CENTER);  // Centrado del texto
+            label.setText(label.getText().toUpperCase());  // Convertir a mayúsculas
+            
             return com;
         }
 

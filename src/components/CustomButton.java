@@ -17,6 +17,8 @@ import utils.ShadowRenderer;
 public class CustomButton extends JButton {
 
     private static final long serialVersionUID = 1L;
+    private int shadowBlurRadius = 5; // Valor inicial para el difuminado
+
 
 	public int getRound() {
         return round;
@@ -139,5 +141,10 @@ public class CustomButton extends JButton {
         } else {
             return null;
         }
+    }
+
+    public void setShadowBlurRadius(int i) {
+        this.shadowBlurRadius = i;  // Actualiza el valor del difuminado
+        repaint();  // Redibuja el botón con la nueva sombra
     }
 }
