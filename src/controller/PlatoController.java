@@ -16,7 +16,6 @@ public class PlatoController {
     }
 
     public List<Plato> listar() {
-    	System.out.print(dao.list());
         return dao.list();
     }
 

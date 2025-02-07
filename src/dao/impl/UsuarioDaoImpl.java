@@ -11,7 +11,7 @@ import utils.MySqlConexion;
 public class UsuarioDaoImpl implements IUsuarioDao {
 
     @Override
-    public List<Usuario> listUsuarios() {
+    public List<Usuario> list() {
         List<Usuario> listUsuarios = new ArrayList<>();
         Connection cn = null;
         PreparedStatement psm = null;
@@ -49,7 +49,7 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     }
 
     @Override
-    public Usuario getUsuario(int id) {
+    public Usuario get(int id) {
         Usuario usuario = null;
         Connection cn = null;
         PreparedStatement psm = null;
@@ -86,18 +86,14 @@ public class UsuarioDaoImpl implements IUsuarioDao {
     }
 
     @Override
-    public boolean createUsuario(Usuario usuario) {
+    public Usuario create(Usuario usuario) throws SQLException {
         Connection cn = null;
         PreparedStatement psm = null;
         ResultSet rs = null;
-        boolean ok=false;
 
         try {
             cn = MySqlConexion.getConexion();
-
-            String sqlInsert = "INSERT INTO Usuario (NombreUsuario, Correo, Contrasena, Rol) "
-                             + "VALUES (?, ?, ?, ?)";
-
+            String sqlInsert = "INSERT INTO Usuario (NombreUsuario, Correo, Contrasena, Rol) VALUES (?, ?, ?, ?)";
             psm = cn.prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
 
             psm.setString(1, usuario.getNombreUsuario());
@@ -112,11 +108,10 @@ public class UsuarioDaoImpl implements IUsuarioDao {
                 if (rs.next()) {
                     int generatedId = rs.getInt(1);
                     usuario.setIdUsuario(generatedId);
-                   ok=true;
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new SQLException("El nombre de usuario ya existe. Intente con otro.");
         } finally {
             try {
                 if (rs != null) rs.close();
@@ -126,11 +121,49 @@ public class UsuarioDaoImpl implements IUsuarioDao {
                 e.printStackTrace();
             }
         }
-        return ok;
+        return usuario;
     }
+    
+    @Override
+	public Usuario update(Usuario usuario) throws SQLException {
+		Connection cn = null;
+		PreparedStatement psm = null;
+
+        try {
+            cn = MySqlConexion.getConexion();
+
+            String sql = "UPDATE Usuario SET NombreUsuario = ?, Correo = ?, Contrasena = ?, Rol = ? "
+                       + "WHERE IdUsuario = ?";
+
+            psm = cn.prepareStatement(sql);
+
+            psm.setString(1, usuario.getNombreUsuario());
+            psm.setString(2, usuario.getCorreo());
+            psm.setString(3, usuario.getContrasena());
+            psm.setString(4, usuario.getRol());
+            psm.setInt(5, usuario.getIdUsuario());
+
+            int resultado = psm.executeUpdate();
+            
+            if (resultado == 0) {
+	            System.out.println("No se encontró el usuario con el ID proporcionado.");
+	        }
+            
+        } catch (SQLIntegrityConstraintViolationException e) {
+        	throw new SQLException("El nombre de usuario ya existe. Intente con otro.");
+        } finally {
+            try {
+                if (psm != null) psm.close();
+                if (cn != null) cn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return usuario;
+	}
 
     @Override
-    public boolean deleteUsuario(int id) {
+    public boolean delete(int id) {
         Connection cn = null;
         PreparedStatement psm = null;
         boolean isDeleted = false;
@@ -159,42 +192,6 @@ public class UsuarioDaoImpl implements IUsuarioDao {
         }
         return isDeleted;
     }
-
-	@Override
-	public boolean updateUsuario(Usuario usuario) {
-		Connection cn = null;
-		PreparedStatement psm = null;
-
-        try {
-            cn = MySqlConexion.getConexion();
-
-            String sql = "UPDATE Usuario SET NombreUsuario = ?, Correo = ?, Contrasena = ?, Rol = ? "
-                       + "WHERE IdUsuario = ?";
-
-            psm = cn.prepareStatement(sql);
-
-            psm.setString(1, usuario.getNombreUsuario());
-            psm.setString(2, usuario.getCorreo());
-            psm.setString(3, usuario.getContrasena());
-            psm.setString(4, usuario.getRol());
-            psm.setInt(5, usuario.getIdUsuario());
-
-            int resultado = psm.executeUpdate();
-            if (resultado != 0)
-            	return true;
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (psm != null) psm.close();
-                if (cn != null) cn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-	}
 	
 	@Override
 	public Usuario login(String nombreUsuario, String contrasena) {
