@@ -20,7 +20,7 @@ public class CustomTextField extends JTextField {
     
     private int round = 10;
     private Color shadowColor = new Color(170, 170, 170);
-    private Color borderColor = new Color(211, 211, 211); // Gris claro para el borde
+    private Color borderColor = new Color(211, 211, 211);
     private BufferedImage imageShadow;
     private final Insets shadowSize = new Insets(2, 5, 8, 5);
 
@@ -48,9 +48,8 @@ public class CustomTextField extends JTextField {
                     placeholderLabel.setVisible(false);
                 }
 
-                // Cambiar color al ganar el foco
-                shadowColor = new java.awt.Color(18, 61, 42); // Cambiar a verde oscuro
-                borderColor = new java.awt.Color(18, 61, 42); // Cambiar el borde al mismo color
+                shadowColor = new java.awt.Color(18, 61, 42);
+                borderColor = new java.awt.Color(18, 61, 42);
                 createImageShadow();
                 repaint();
             }
@@ -61,7 +60,6 @@ public class CustomTextField extends JTextField {
                     placeholderLabel.setVisible(true);
                 }
 
-                // Cambiar a los colores originales cuando pierde el foco
                 shadowColor = new Color(170, 170, 170);
                 borderColor = new Color(211, 211, 211);
                 createImageShadow();
@@ -93,7 +91,7 @@ public class CustomTextField extends JTextField {
         Area area = new Area(new RoundRectangle2D.Double(x, y, width, height, round, round));
         g2.fill(area);
 
-        g2.setColor(borderColor); // Usar el color del borde
+        g2.setColor(borderColor);
         g2.setStroke(new java.awt.BasicStroke(1));
         g2.drawRoundRect((int) x, (int) y, (int) width, (int) height, round, round);
 

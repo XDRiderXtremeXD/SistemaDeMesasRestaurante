@@ -15,7 +15,7 @@ import utils.MySqlConexion;
 public class PlatoDaoImpl implements IPlatoDao {
 
 	@Override
-	public List<Plato> listPlatos() {
+	public List<Plato> list() {
 		List<Plato> listPlatos = new ArrayList<Plato>();
 		Connection cn = null;
 		PreparedStatement psm = null;
@@ -52,7 +52,7 @@ public class PlatoDaoImpl implements IPlatoDao {
 	}
 
 	@Override
-	public Plato getPlato(int idPlato) {
+	public Plato get(int idPlato) {
 		Plato plato = null;
 	    Connection cn = null;
 	    PreparedStatement psm = null;
@@ -89,7 +89,7 @@ public class PlatoDaoImpl implements IPlatoDao {
 	}
 
 	@Override
-	public Plato createPlato(Plato plato) {
+	public Plato create(Plato plato) {
 	    Connection cn = null;
 	    PreparedStatement psm = null;
 	    ResultSet rs = null;
@@ -131,7 +131,7 @@ public class PlatoDaoImpl implements IPlatoDao {
 	}
 
 	@Override
-	public Plato updatePlato(Plato plato) {
+	public Plato update(Plato plato) {
 	    Connection cn = null;
 	    PreparedStatement psm = null;
 
@@ -168,7 +168,7 @@ public class PlatoDaoImpl implements IPlatoDao {
 	}
 	
 	@Override
-	public boolean deletePlato(int idPlato) {
+	public boolean delete(int idPlato) {
 	    Connection cn = null;
 	    PreparedStatement psm = null;
 	    boolean isDeleted = false;

@@ -45,6 +45,7 @@ public class Dashboard extends JFrame implements ActionListener {
     public Dashboard(Usuario usuario) {
         getContentPane().setBackground(SystemColor.control);
         this.usuario = usuario;
+    	platoController = new PlatoController();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Bienvenido al Portál");
@@ -73,8 +74,9 @@ public class Dashboard extends JFrame implements ActionListener {
         headerLabel.setBackground(SystemColor.activeCaption);
         headerLabel.setForeground(Color.BLACK);
         headerLabel.setPreferredSize(new Dimension(100, 150));
-        getContentPane().add(headerLabel);
-
+        getContentPane().add(headerLabel, BorderLayout.NORTH);
+        
+        // Crear el controlador
         // Panel central con pestañas
         tabbedPane = new JTabbedPane();
         tabbedPane.setBorder(BorderFactory.createEmptyBorder()); // Elimina el borde del TabbedPane
@@ -82,7 +84,7 @@ public class Dashboard extends JFrame implements ActionListener {
         tabbedPane.setBounds(10, 160, 1312, 575);
         tabbedPane.setBackground(SystemColor.control);
         tabbedPane.setOpaque(true); 
-        usuariosView = new UsuariosView();
+        usuariosView = new UsuariosView(platoController.listar());
         tabbedPane.addTab("Usuarios", null, usuariosView, null);
         mesasView = new MesasView(salaController, tabbedPane, realizarPedidoView);
         tabbedPane.addTab("Mesas", null, mesasView, null);
@@ -90,12 +92,12 @@ public class Dashboard extends JFrame implements ActionListener {
         tabbedPane.addTab("Inicio", null, inicioView, null);
         salasView = new SalasView(salaController, inicioView, mesasView);
         tabbedPane.addTab("Salas", null, salasView, null);
-        cartaDelDia = new CartaDelDiaView();
-        cartaDelDia.setBorder(null);
-        tabbedPane.addTab("Carta del día", null, cartaDelDia, null);
-        platoController = new PlatoController(cartaDelDia);
-        
-        pedidosActualesView = new PedidosActualesView(true, true, false);
+                
+        cartaDelDia = new CartaDelDiaView(platoController.listar());
+        tabbedPane.addTab("Carta del dia", null, cartaDelDia, null);
+        usuariosView = new UsuariosView();
+        tabbedPane.addTab("Usuarios", null, usuariosView, null);   
+        pedidosActualesView = new PedidosActualesView(true,true,false);
         tabbedPane.addTab("Pedidos Actuales", null, pedidosActualesView, null);
         historialPedidoView = new HistorialPedidoView();
         tabbedPane.addTab("Historial Pedidos", null, historialPedidoView, null);
@@ -165,7 +167,7 @@ public class Dashboard extends JFrame implements ActionListener {
         sourceButton.setBackground(new java.awt.Color(24, 86, 56)); // Verde oscuro
 
         if (sourceButton == btnCartaDelDia) {
-            platoController.listarPlatos();
+			cartaDelDia.listar(platoController.listar());
             tabbedPane.setSelectedComponent(cartaDelDia);
         } else if (sourceButton == btnSalas) {
             tabbedPane.setSelectedComponent(salasView);
