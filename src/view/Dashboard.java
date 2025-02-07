@@ -84,7 +84,7 @@ public class Dashboard extends JFrame implements ActionListener {
         tabbedPane.setBounds(10, 160, 1312, 575);
         tabbedPane.setBackground(SystemColor.control);
         tabbedPane.setOpaque(true); 
-        usuariosView = new UsuariosView(platoController.listar());
+        usuariosView = new UsuariosView();
         tabbedPane.addTab("Usuarios", null, usuariosView, null);
         mesasView = new MesasView(salaController, tabbedPane, realizarPedidoView);
         tabbedPane.addTab("Mesas", null, mesasView, null);
@@ -107,7 +107,7 @@ public class Dashboard extends JFrame implements ActionListener {
         
 
            // Configurar las vistas de las pestañas
-           realizarPedidoView = new RealizarPedidoView();
+           realizarPedidoView = new RealizarPedidoView(platoController.listar());
            tabbedPane.addTab("Realizar Pedidos", null, realizarPedidoView, null);
 
         panel = new JPanel();
