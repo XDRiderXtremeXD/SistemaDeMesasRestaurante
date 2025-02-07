@@ -62,7 +62,7 @@ public class Dashboard extends JFrame implements ActionListener {
 
         // Panel superior (cabecera)
         JLabel headerLabel = new JLabel(logoIcon, SwingConstants.CENTER);
-        headerLabel.setBounds(0, 0, 1348, 157);
+        headerLabel.setBounds(10, 0, 1564, 157);
         headerLabel.setOpaque(true);
 
         ImageIcon headerImage = new ImageIcon(getClass().getResource("/imgs/fondo.png"));
@@ -81,7 +81,7 @@ public class Dashboard extends JFrame implements ActionListener {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBorder(BorderFactory.createEmptyBorder()); // Elimina el borde del TabbedPane
 
-        tabbedPane.setBounds(10, 160, 1312, 575);
+        tabbedPane.setBounds(10, 160, 1564, 575);
         tabbedPane.setBackground(SystemColor.control);
         tabbedPane.setOpaque(true); 
         usuariosView = new UsuariosView();
@@ -112,13 +112,13 @@ public class Dashboard extends JFrame implements ActionListener {
 
         panel = new JPanel();
         panel.setBackground(new Color(255, 255, 255));
-        panel.setBounds(0, 732, 1348, 89);
+        panel.setBounds(0, 746, 1574, 104);
         getContentPane().add(panel);
         panel.setLayout(null);
 
         // Panel lateral (botones horizontales)
         JPanel sidePanel = new JPanel();
-        sidePanel.setBounds(131, 10, 1063, 60);
+        sidePanel.setBounds(250, 10, 1217, 60);
         panel.add(sidePanel);
         sidePanel.setBackground(Color.WHITE);
         sidePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
