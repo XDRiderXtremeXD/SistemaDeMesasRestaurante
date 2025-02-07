@@ -1,75 +1,75 @@
-	
 package view;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import components.CustomButtonEditorTable;
+import components.CustomTable;
 import controller.PedidoController;
 import model.Pedido;
 import utils.ButtonRenderer;
 import utils.TiempoRenderer;
-
+import java.awt.*;
 import java.awt.event.ActionEvent;
-	import java.awt.event.ActionListener;
-	import java.time.Duration;
-	import java.time.LocalDateTime;
-	import java.util.List;
-	
-	
+import java.awt.event.ActionListener;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class PedidosActualesView extends JPanel {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private JTable table;
+    private static final long serialVersionUID = 1L;
+    private JTable table;
     private DefaultTableModel tableModel;
     private PedidoController pedidoController;
-    private Timer timer; // Timer para actualizar el tiempo
+    private Timer timer;
     private boolean pendiente;
     private boolean entregado;
     private boolean finalizado;
-    private JScrollPane scrollPane;
 
-	public PedidosActualesView(boolean pendiente,boolean entregado,boolean finalizado) {
-        setLayout(null);
+    public PedidosActualesView(boolean pendiente, boolean entregado, boolean finalizado) {
+        this.pendiente = pendiente;
+        this.entregado = entregado;
+        this.finalizado = finalizado;
         pedidoController = new PedidoController();
-        this.pendiente=pendiente;
-        this.entregado=entregado;
-        this.finalizado=finalizado;
-        
-        scrollPane = new JScrollPane();
-        scrollPane.setBounds(0, 0, 1430, 900);
-        add(scrollPane);
-        
 
-        CreacionTabla();
-        InicializarTablaDatos();
-        iniciarTimer();
+        setPreferredSize(new Dimension(1427, 675));
+        setLayout(new BorderLayout());
+
+        creacionTabla();
+        inicializarTablaDatos();
+        startTimer();
     }
 
-    public void CreacionTabla() {
-        tableModel = new DefaultTableModel(
-                new Object[][] {},
-                new String[] { "IdPedido", "Sala", "NumeroMesa", "Fecha", "Total", "Estado", "Usuario", "Tiempo", "Ver/Estado" }
-            ) {
-            	@Override
-    			public boolean isCellEditable(int row, int column) {
-    				return column == 8; 
-    			}
-            };
-            table = new JTable(tableModel);
-            table.setRowHeight(40); 
-    		// Rutas de los iconos
-    		String rutaIconoDetalle = "/resources/detalles.png";
+    private void creacionTabla() {
+        String[] columns = {"IdPedido", "Sala", "NumeroMesa", "Fecha", "Total", "Estado", "Usuario", "Tiempo", "Ver/Estado"};
+        tableModel = new DefaultTableModel(columns, 0) {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 8;
+            }
+        };
+
+        table = new JTable(tableModel);
+        table.setRowHeight(40);
+        table.getTableHeader().setReorderingAllowed(false);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
+        add(scrollPane, BorderLayout.CENTER);
+        
+        /*
+         * String rutaIconoDetalle = "/imgs/detalles.png";
     		ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
     				
     		table.getColumn("Ver/Estado").setCellRenderer(new ButtonRenderer(iconoDetalle));
     		table.getColumn("Ver/Estado").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
     				e -> verDetallePedidoEstado(e, this))); 
             
-            scrollPane.setViewportView(table);
+         * */
+        scrollPane.setViewportView(table);
+
     }
     
     public void verDetallePedidoEstado(ActionEvent e, PedidosActualesView pedidoView) {
@@ -87,13 +87,12 @@ public class PedidosActualesView extends JPanel {
         frame.setLocationRelativeTo(pedidoView); 
         frame.setVisible(true); 
     }
-    
-    public void InicializarTablaDatos() {
-    	
-        List<Pedido> pedidos=pedidoController.listarPedidos(pendiente,entregado,finalizado);
+
+    public void inicializarTablaDatos() {
+        List<Pedido> pedidos = pedidoController.listarPedidos(pendiente, entregado, finalizado);
         tableModel.setRowCount(0);
         for (Pedido pedido : pedidos) {
-            tableModel.addRow(new Object[] {
+            tableModel.addRow(new Object[]{
                 pedido.getIdPedido(),
                 pedido.getNombreSala(),
                 pedido.getNumeroMesa(),
@@ -101,40 +100,35 @@ public class PedidosActualesView extends JPanel {
                 pedido.getTotal(),
                 pedido.getEstado(),
                 pedido.getUsuario(),
-                calcularTiempoTranscurrido(pedido.getFecha()), 
+                calcularTiempoTranscurrido(pedido.getFecha()),
                 "Ver/Estado"
             });
         }
-
         table.getColumnModel().getColumn(7).setCellRenderer(new TiempoRenderer());
     }
 
-
-    private void iniciarTimer() {
+    private void startTimer() {
         timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actualizarTiempos();
+                updateTimes();
             }
         });
-        timer.start(); // Iniciar el temporizador
+        timer.start();
     }
 
-    private void actualizarTiempos() {
+    private void updateTimes() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
-        	LocalDateTime fechaPedido = (LocalDateTime) tableModel.getValueAt(i, 3);
-            tableModel.setValueAt(calcularTiempoTranscurrido(fechaPedido), i, 7); 
+            LocalDateTime fechaPedido = (LocalDateTime) tableModel.getValueAt(i, 3);
+            tableModel.setValueAt(calcularTiempoTranscurrido(fechaPedido), i, 7);
         }
     }
 
-    private String calcularTiempoTranscurrido(LocalDateTime localDateTime) {
-        LocalDateTime ahora = LocalDateTime.now();
-        Duration duracion = Duration.between( localDateTime, ahora);
-        
+    private String calcularTiempoTranscurrido(LocalDateTime fecha) {
+        Duration duracion = Duration.between(fecha, LocalDateTime.now());
         long horas = duracion.toHours();
         long minutos = duracion.toMinutes() % 60;
         long segundos = duracion.getSeconds() % 60;
-
         return String.format("%02d:%02d:%02d", horas, minutos, segundos);
     }
 }
