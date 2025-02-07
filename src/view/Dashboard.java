@@ -10,18 +10,20 @@ import java.awt.*;
 import components.CustomButton;
 import controller.PlatoController;
 import controller.SalaController;
+import controller.UsuarioController;
 import model.Usuario;
 
 public class Dashboard extends JFrame implements ActionListener {
     private Usuario usuario;
     private PlatoController platoController;
     private SalaController salaController;
+    private UsuarioController usuarioController;
 
     private SalasView salasView;
     private MesasView mesasView;
     private Inicio inicioView;
-
-    private CartaDelDiaView cartaDelDia;
+    
+    private CartaDelDiaView cartaDelDiaView;
     private FinalizarPedidoView finalizarPedidoView;
     private PedidosActualesView pedidosActualesView;
     private HistorialPedidoView historialPedidoView;
@@ -46,10 +48,12 @@ public class Dashboard extends JFrame implements ActionListener {
         getContentPane().setBackground(SystemColor.control);
         this.usuario = usuario;
     	platoController = new PlatoController();
+    	usuarioController = new UsuarioController();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Bienvenido al Portál");
         setSize(1600, 900);
+        
         ImageIcon logoIcon = new ImageIcon(getClass().getResource("/imgs/LogoIcon.png"));
         setIconImage(logoIcon.getImage());
         setLocationRelativeTo(null);
@@ -92,10 +96,9 @@ public class Dashboard extends JFrame implements ActionListener {
         tabbedPane.addTab("Inicio", null, inicioView, null);
         salasView = new SalasView(salaController, inicioView, mesasView);
         tabbedPane.addTab("Salas", null, salasView, null);
-                
-        cartaDelDia = new CartaDelDiaView(platoController.listar());
-        tabbedPane.addTab("Carta del dia", null, cartaDelDia, null);
-        usuariosView = new UsuariosView();
+        cartaDelDiaView = new CartaDelDiaView(platoController.listar());
+        tabbedPane.addTab("Carta del dia", null, cartaDelDiaView, null);
+        usuariosView = new UsuariosView(usuarioController.listar());
         tabbedPane.addTab("Usuarios", null, usuariosView, null);   
         pedidosActualesView = new PedidosActualesView(true,true,false);
         tabbedPane.addTab("Pedidos Actuales", null, pedidosActualesView, null);
@@ -167,8 +170,9 @@ public class Dashboard extends JFrame implements ActionListener {
         sourceButton.setBackground(new java.awt.Color(24, 86, 56)); // Verde oscuro
 
         if (sourceButton == btnCartaDelDia) {
-			cartaDelDia.listar(platoController.listar());
-            tabbedPane.setSelectedComponent(cartaDelDia);
+			cartaDelDiaView.listar(platoController.listar());
+			cartaDelDiaView.valoresIniciales();
+            tabbedPane.setSelectedComponent(cartaDelDiaView);
         } else if (sourceButton == btnSalas) {
             tabbedPane.setSelectedComponent(salasView);
         } else if (sourceButton == btnPedidos) {
@@ -176,6 +180,8 @@ public class Dashboard extends JFrame implements ActionListener {
         } else if (sourceButton == btnHistorialPedidos) {
             tabbedPane.setSelectedComponent(historialPedidoView);
         } else if (sourceButton == btnUsuarios) {
+			usuariosView.listar(usuarioController.listar());
+			usuariosView.valoresIniciales();
             tabbedPane.setSelectedComponent(usuariosView);
         } else if (sourceButton == btnInicio) {
             tabbedPane.setSelectedComponent(inicioView);

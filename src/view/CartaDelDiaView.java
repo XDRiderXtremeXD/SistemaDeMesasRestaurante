@@ -1,6 +1,7 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
@@ -22,7 +23,8 @@ public class CartaDelDiaView extends JPanel {
     private CustomButton btnAgregar;
     private CustomButton btnEliminar;
     private CustomTextField txtNombre;
-    private CustomTextField txtPrecio;
+    private CustomTextField txtPrecio, txtBuscar;
+    private JPanel formularioPanel;
 
     public CartaDelDiaView(List<Plato> platos) {	
         setPreferredSize(new Dimension(1427, 675));
@@ -46,18 +48,50 @@ public class CartaDelDiaView extends JPanel {
         tablaPlatos.getColumnModel().getColumn(3).setPreferredWidth(150);
 
         JPanel tablaPanel = new JPanel(new BorderLayout());
+        tablaPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        tablaPanel.setBackground(SystemColor.textHighlightText);
+        
+        txtBuscar = new CustomTextField();
+        txtBuscar.setPlaceholder("Buscar por nombre...");
+        txtBuscar.setPreferredSize(new Dimension(300, 40));
+        
+        txtBuscar.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                buscarPlatos(txtBuscar.getText(), platos);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                buscarPlatos(txtBuscar.getText(), platos);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                buscarPlatos(txtBuscar.getText(), platos);
+            }
+        });
+        
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        searchPanel.setBackground(SystemColor.textHighlightText);
+        searchPanel.add(txtBuscar);
+        tablaPanel.add(searchPanel, BorderLayout.NORTH);
+        
+        // ScrollPane con la tabla
         JScrollPane scrollPane = new JScrollPane(tablaPlatos);
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
         tablaPanel.add(scrollPane, BorderLayout.CENTER);
 
         listar(platos);
         
-        JPanel formularioPanel = new JPanel();
+        // Panel de formulario (sin cambios)
+        formularioPanel = new JPanel();
+        formularioPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(211, 211, 211)));
         formularioPanel.setBackground(SystemColor.textHighlightText);
         formularioPanel.setLayout(null);
         formularioPanel.setPreferredSize(new Dimension(400, 0));
 
-        JLabel lblTitulo = new JLabel("Carta del Día");
+        JLabel lblTitulo = new JLabel("Agregar Carta del Día");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
         lblTitulo.setBounds(50, 30, 300, 30);
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -228,18 +262,27 @@ public class CartaDelDiaView extends JPanel {
             int[] filasSeleccionadas = tablaPlatos.getSelectedRows();
             if (filasSeleccionadas.length > 0) {
                 PlatoController platoController = new PlatoController();
-                
+                boolean algunEliminado = false;
+                int platosEliminados = 0;
+
                 for (int i = filasSeleccionadas.length - 1; i >= 0; i--) {
                     int fila = filasSeleccionadas[i];
                     int idPlato = (int) tableModel.getValueAt(fila, 0);
 
                     boolean eliminado = platoController.eliminar(idPlato);
                     if (eliminado) {
-                    	CustomAlert.showAlert("Éxito", "El plato ha sido eliminado correctamente", "success");
                         tableModel.removeRow(fila);
-                    } else {
-                    	CustomAlert.showAlert("Error", "No se pudo eliminar el plato", "error");
+                        algunEliminado = true;
+                        platosEliminados++;
                     }
+                }
+
+                if (algunEliminado) {
+                    String mensaje = (platosEliminados == 1) ? "El plato ha sido eliminado" : "Los platos han sido eliminados";
+                    CustomAlert.showAlert("Éxito", mensaje, "success");
+                } else {
+                    String mensajeError = (filasSeleccionadas.length == 1) ? "No se pudo eliminar el plato" : "No se pudieron eliminar los platos";
+                    CustomAlert.showAlert("Error", mensajeError, "error");
                 }
             }
         });
@@ -275,4 +318,43 @@ public class CartaDelDiaView extends JPanel {
             tableModel.addRow(row);
         }
     }
+    
+    private void buscarPlatos(String query, List<Plato> platos) {
+        DefaultTableModel tableModelDerecho = (DefaultTableModel) tablaPlatos.getModel();
+        tableModelDerecho.setRowCount(0);
+
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+        if (query.isEmpty()) {
+            listar(platos);
+        } else {
+            for (Plato plato : platos) {
+                if (plato.getNombre().toLowerCase().contains(query.toLowerCase())) {
+                    Object[] rowDerecha = new Object[4];
+                    rowDerecha[0] = plato.getIdPlato();
+                    rowDerecha[1] = plato.getNombre();
+                    rowDerecha[2] = "S/. " + decimalFormat.format(plato.getPrecio());
+                    rowDerecha[3] = plato.getFecha();
+                    tableModelDerecho.addRow(rowDerecha);
+                }
+            }
+        }
+    }
+    
+    public void valoresIniciales() {
+        txtBuscar.setText("");
+
+        txtNombre.setText("");
+        txtNombre.restorePlaceholder();
+        
+        txtPrecio.setText("");
+        txtPrecio.restorePlaceholder();
+
+        btnAgregar.setEnabled(false);
+        
+        tablaPlatos.clearSelection();
+        
+        formularioPanel.requestFocus();
+    }
+
 }

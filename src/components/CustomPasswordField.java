@@ -183,9 +183,15 @@ public class CustomPasswordField extends JPasswordField {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.fill(new RoundRectangle2D.Double(0, 0, width, height, round, round));
             g2.dispose();
-            return new ShadowRenderer(5, 0.3f, shadowColor).createShadow(img); // Usar el color de sombra actualizado
+            return new ShadowRenderer(5, 0.3f, shadowColor).createShadow(img);
         } else {
             return null;
+        }
+    }
+    
+    public void restorePlaceholder() {
+        if (getPassword().length == 0) {
+            placeholderLabel.setVisible(true);
         }
     }
 
