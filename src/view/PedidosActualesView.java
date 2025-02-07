@@ -59,15 +59,14 @@ public class PedidosActualesView extends JPanel {
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
         add(scrollPane, BorderLayout.CENTER);
         
-        /*
-         * String rutaIconoDetalle = "/imgs/detalles.png";
+            String rutaIconoDetalle = "/imgs/detalles.png";
     		ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
     				
     		table.getColumn("Ver/Estado").setCellRenderer(new ButtonRenderer(iconoDetalle));
     		table.getColumn("Ver/Estado").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
     				e -> verDetallePedidoEstado(e, this))); 
             
-         * */
+        
         scrollPane.setViewportView(table);
 
     }

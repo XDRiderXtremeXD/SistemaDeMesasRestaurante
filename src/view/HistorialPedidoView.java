@@ -106,12 +106,12 @@ import controller.PedidoController;
 
 		    
 		    JScrollPane scrollPane = new JScrollPane(table);
-		    scrollPane.setBounds(0, 90, 1372, 575); // Mover más abajo
+		    scrollPane.setBounds(0, 90, 1593, 575); // Mover más abajo
 		    CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
 		    add(scrollPane);
 		    
 
-		    /*
+		    
 		    // Configurar el botón "Ver Detalle" con icono
 		    String rutaIconoDetalle = "/imgs/detalles.png";
 		    ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
@@ -120,7 +120,7 @@ import controller.PedidoController;
 		    table.getColumn("Ver Detalle").setCellRenderer(new ButtonRenderer(iconoDetalle));
 		    table.getColumn("Ver Detalle").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
 		            e -> verDetallePedidoEstado(e))); // Acción para ver detalles
-		    */
+		    
             scrollPane.setViewportView(table);
 
 		}
