@@ -1,4 +1,4 @@
-package view;
+package model;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -19,6 +19,7 @@ import components.CustomButtonEditorTable;
 import controller.PedidoController;
 import model.Pedido;
 import utils.ButtonRenderer;
+import view.DetallePedidoView;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
