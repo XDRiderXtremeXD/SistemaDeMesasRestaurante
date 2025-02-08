@@ -43,108 +43,112 @@ public class Dashboard extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
     private JPanel panel;
     private JLabel label;
+    private JPanel FooterOptions;
 
     public Dashboard(Usuario usuario) {
-        getContentPane().setBackground(SystemColor.control);
+        // Asignar el usuario actual
         this.usuario = usuario;
-    	platoController = new PlatoController();
-    	usuarioController = new UsuarioController();
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Bienvenido al Portál");
-        setSize(1600, 900);
         
+        // Inicializar controladores
+        platoController = new PlatoController();
+        usuarioController = new UsuarioController();
+        salaController = new SalaController();
+        
+        // Configurar la ventana principal
+        setSize(1400, 700);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Bienvenido al Portal");
+        
+        // Configurar el icono de la aplicación
         ImageIcon logoIcon = new ImageIcon(getClass().getResource("/imgs/LogoIcon.png"));
         setIconImage(logoIcon.getImage());
         setLocationRelativeTo(null);
-
-        salaController = new SalaController();
-        getContentPane().setLayout(null);
-
-        // Definir tamaño preferido para los botones
-        Dimension buttonSize = new Dimension(150, 40);
-
-        // Panel superior (cabecera)
-        JLabel headerLabel = new JLabel(logoIcon, SwingConstants.CENTER);
-        headerLabel.setBounds(10, 0, 1564, 157);
-        headerLabel.setOpaque(true);
-
-        ImageIcon headerImage = new ImageIcon(getClass().getResource("/imgs/fondo.png"));
-        Image image = headerImage.getImage();
-        Image scaledImage = image.getScaledInstance(headerLabel.getWidth(), headerLabel.getHeight(), Image.SCALE_SMOOTH);
-        headerImage = new ImageIcon(scaledImage);
-        headerLabel.setIcon(headerImage);
-
-        headerLabel.setBackground(SystemColor.activeCaption);
-        headerLabel.setForeground(Color.BLACK);
-        headerLabel.setPreferredSize(new Dimension(100, 150));
-        getContentPane().add(headerLabel, BorderLayout.NORTH);
         
-        // Crear el controlador
-        // Panel central con pestañas
-        tabbedPane = new JTabbedPane();
-        tabbedPane.setBorder(BorderFactory.createEmptyBorder()); // Elimina el borde del TabbedPane
-
-        tabbedPane.setBounds(10, 160, 1564, 575);
-        tabbedPane.setBackground(SystemColor.control);
-        tabbedPane.setOpaque(true); 
-        usuariosView = new UsuariosView();
-        tabbedPane.addTab("Usuarios", null, usuariosView, null);
+        // Establecer el diseño de la ventana
+        getContentPane().setBackground(SystemColor.control);
+        getContentPane().setLayout(new BorderLayout(0, 0));
+        
+        // Crear el panel de cabecera
+        JPanel HeaderImage = new JPanel();
+        getContentPane().add(HeaderImage, BorderLayout.NORTH);
+        
+        // Agregar imagen de cabecera
+        JLabel lblHeaderImage = new JLabel("");
+        lblHeaderImage.setIcon(new ImageIcon(Dashboard.class.getResource("/imgs/fondo.png")));
+        HeaderImage.add(lblHeaderImage);
+        
+        lblHeaderImage.setBackground(SystemColor.activeCaption);
+        lblHeaderImage.setForeground(Color.BLACK);
+        
+        // Panel principal que contiene el contenido central y el footer
+        JPanel Main = new JPanel();
+        getContentPane().add(Main, BorderLayout.CENTER);
+        Main.setLayout(new BorderLayout(0, 0));
+        
+        // Panel de opciones en el pie de la ventana
+        FooterOptions = new JPanel();
+        Main.add(FooterOptions, BorderLayout.SOUTH);
+        
+        // Panel de contenido central
+        JPanel Contenido = new JPanel();
+        Main.add(Contenido, BorderLayout.CENTER);
+        Contenido.setLayout(new CardLayout(0, 0));
+        
+        // Crear el TabbedPane para la navegación
+        tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        Contenido.add(tabbedPane, "name_11813298604300");
+        
+        // Inicializar las diferentes vistas dentro de las pestañas
         mesasView = new MesasView(salaController, tabbedPane, realizarPedidoView);
         tabbedPane.addTab("Mesas", null, mesasView, null);
+        
         inicioView = new Inicio(salaController, mesasView, tabbedPane);
         tabbedPane.addTab("Inicio", null, inicioView, null);
+        
         salasView = new SalasView(salaController, inicioView, mesasView);
         tabbedPane.addTab("Salas", null, salasView, null);
+        
         cartaDelDiaView = new CartaDelDiaView(platoController.listar());
-        tabbedPane.addTab("Carta del dia", null, cartaDelDiaView, null);
+        tabbedPane.addTab("Carta del día", null, cartaDelDiaView, null);
+        
         usuariosView = new UsuariosView(usuarioController.listar());
-        tabbedPane.addTab("Usuarios", null, usuariosView, null);   
-        pedidosActualesView = new PedidosActualesView(true,true,false);
+        tabbedPane.addTab("Usuarios", null, usuariosView, null);
+        
+        pedidosActualesView = new PedidosActualesView(true, true, false);
         tabbedPane.addTab("Pedidos Actuales", null, pedidosActualesView, null);
+        
         historialPedidoView = new HistorialPedidoView();
         tabbedPane.addTab("Historial Pedidos", null, historialPedidoView, null);
-        getContentPane().add(tabbedPane);
+        
         finalizarPedidoView = new FinalizarPedidoView();
         tabbedPane.addTab("Detalle Pedido", null, finalizarPedidoView, null);
         
-
-           // Configurar las vistas de las pestañas
-           realizarPedidoView = new RealizarPedidoView(platoController.listar());
-           tabbedPane.addTab("Realizar Pedidos", null, realizarPedidoView, null);
-
-        panel = new JPanel();
-        panel.setBackground(new Color(255, 255, 255));
-        panel.setBounds(0, 746, 1574, 104);
-        getContentPane().add(panel);
-        panel.setLayout(null);
-
-        // Panel lateral (botones horizontales)
-        JPanel sidePanel = new JPanel();
-        sidePanel.setBounds(250, 10, 1217, 60);
-        panel.add(sidePanel);
-        sidePanel.setBackground(Color.WHITE);
-        sidePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
-
-        // Configurar los botones y añadirlos al panel lateral
-        btnInicio = createButton("Inicio", buttonSize, sidePanel);
-        btnPedidos = createButton("Pedidos", buttonSize, sidePanel);
-        btnSalas = createButton("Salas", buttonSize, sidePanel);
-        btnHistorialPedidos = createButton("Historial Pedidos", buttonSize, sidePanel);
-        btnCartaDelDia = createButton("Carta del día", buttonSize, sidePanel);
-        btnUsuarios = createButton("Usuarios", buttonSize, sidePanel);
+        realizarPedidoView = new RealizarPedidoView(platoController.listar());
+        tabbedPane.addTab("Realizar Pedidos", null, realizarPedidoView, null);
         
-        label = new JLabel("New label");
-        label.setBounds(653, 82, 45, 13);
-        getContentPane().add(label);
-
-        // Deshabilitar pestañas inicialmente
+        // Configurar los botones de navegación en el pie de página
+        FooterOptions.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        Dimension buttonSize = new Dimension(150, 40);
+        
+        btnInicio = createButton("Inicio", buttonSize, FooterOptions);
+        btnPedidos = createButton("Pedidos", buttonSize, FooterOptions);
+        btnSalas = createButton("Salas", buttonSize, FooterOptions);
+        btnHistorialPedidos = createButton("Historial Pedidos", buttonSize, FooterOptions);
+        btnCartaDelDia = createButton("Carta del día", buttonSize, FooterOptions);
+        btnUsuarios = createButton("Usuarios", buttonSize, FooterOptions);
+        
+        // Deshabilitar todas las pestañas inicialmente
         for (int i = 0; i < tabbedPane.getTabCount(); i++)
             tabbedPane.setEnabledAt(i, false);
-
-        // Hacer visible
+        
+        // Seleccionar la pestaña de inicio por defecto
+        tabbedPane.setSelectedComponent(inicioView);
+        btnInicio.setBackground(new java.awt.Color(24, 86, 56));
+        
+        // Hacer visible la ventana
         setVisible(true);
     }
+
 
     private CustomButton createButton(String text, Dimension size, JPanel panel) {
         CustomButton button = new CustomButton();
@@ -174,17 +178,17 @@ public class Dashboard extends JFrame implements ActionListener {
 			cartaDelDiaView.valoresIniciales();
             tabbedPane.setSelectedComponent(cartaDelDiaView);
         } else if (sourceButton == btnSalas) {
-            tabbedPane.setSelectedComponent(salasView);
+        	tabbedPane.setSelectedComponent(salasView);
         } else if (sourceButton == btnPedidos) {
-            tabbedPane.setSelectedComponent(pedidosActualesView);
+        	tabbedPane.setSelectedComponent(pedidosActualesView);
         } else if (sourceButton == btnHistorialPedidos) {
-            tabbedPane.setSelectedComponent(historialPedidoView);
+        	tabbedPane.setSelectedComponent(historialPedidoView);
         } else if (sourceButton == btnUsuarios) {
 			usuariosView.listar(usuarioController.listar());
 			usuariosView.valoresIniciales();
-            tabbedPane.setSelectedComponent(usuariosView);
+			tabbedPane.setSelectedComponent(usuariosView);
         } else if (sourceButton == btnInicio) {
-            tabbedPane.setSelectedComponent(inicioView);
+        	tabbedPane.setSelectedComponent(inicioView);
         }
     }
 
