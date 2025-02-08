@@ -36,7 +36,6 @@ import controller.PedidoController;
 
 		private static final long serialVersionUID = 1L;
 		private CustomTextField txtFiltro;
-		private JTable table;
 		private DefaultTableModel tableModel;
 		private PedidoController pedidoController;
 		private JComboBox<String> comboBox;
@@ -44,43 +43,46 @@ import controller.PedidoController;
 		private String textoFiltro;
 		private JLabel lblBuscador;
 		private JLabel lblTBuscador;
+		private JTable table_1;
+		private JScrollPane scrollPane;
 		/**
 		 * Create the panel.
 		 */
 		public HistorialPedidoView() {
+			 pedidoController=new PedidoController();
+			 tipoFiltro="Pedido";
+				textoFiltro="";
+				setPreferredSize(new Dimension(1427, 675));
+			setLayout(new BorderLayout(0, 0));
 			
-	        pedidoController=new PedidoController();
-			tipoFiltro="Pedido";
-			textoFiltro="";
-
-			setPreferredSize(new Dimension(1427, 675));
-	        setLayout(null);
-
+			JPanel panel = new JPanel();
+			add(panel, BorderLayout.NORTH);
+			
+			scrollPane = new JScrollPane();
+			add(scrollPane, BorderLayout.CENTER);
+			
 			lblTBuscador = new JLabel("Tipo de buscador:");
 			lblTBuscador.setFont(new Font("Arial", Font.BOLD, 14));
 			lblTBuscador.setBounds(10, 11, 158, 29);
-			add(lblTBuscador);
+			panel.add(lblTBuscador);
 			
 			CustomComboBox<String> comboBox = new CustomComboBox<>();
 			comboBox.addItem("Pedido");
 			comboBox.addItem("Sala");
 			comboBox.addItem("Mozo");
 			comboBox.setBounds(178, 12, 189, 29);
-			add(comboBox);
-
+			panel.add(comboBox);
 			
 			lblBuscador = new JLabel("ID Pedido:");
 			lblBuscador.setFont(new Font("Arial", Font.BOLD, 14));
 			lblBuscador.setBounds(10, 51, 121, 29);
-			add(lblBuscador);
+			panel.add(lblBuscador);
 			
 			txtFiltro = new CustomTextField();
 			txtFiltro.setBounds(178, 49, 189, 40);
 	        txtFiltro.setPlaceholder("Buscador");
-
-			add(txtFiltro);
+	        panel.add(txtFiltro);
 			txtFiltro.setColumns(10);
-			
 			
 			CreacionTabla();
 			ReiniciarTablaConFiltros();
@@ -100,16 +102,11 @@ import controller.PedidoController;
 		        }
 		    };
 
-		    table = new JTable(tableModel);
-		    table.setRowHeight(40); // Definir la altura de las filas
-		    table.getTableHeader().setReorderingAllowed(false); // Deshabilitar reordenación de columnas
-
+		    table_1 = new JTable(tableModel);
+		    table_1.setRowHeight(40); // Definir la altura de las filas
+		    table_1.getTableHeader().setReorderingAllowed(false); // Deshabilitar reordenación de columnas
 		    
-		    JScrollPane scrollPane = new JScrollPane(table);
-		    scrollPane.setBounds(0, 90, 1593, 575); // Mover más abajo
-		    CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
-		    add(scrollPane);
-		    
+		    scrollPane.setViewportView(table_1);
 
 		    
 		    // Configurar el botón "Ver Detalle" con icono
@@ -117,11 +114,11 @@ import controller.PedidoController;
 		    ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
 
 		    // Asignar el icono al botón de la columna "Ver Detalle"
-		    table.getColumn("Ver Detalle").setCellRenderer(new ButtonRenderer(iconoDetalle));
-		    table.getColumn("Ver Detalle").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
+		    table_1.getColumn("Ver Detalle").setCellRenderer(new ButtonRenderer(iconoDetalle));
+		    table_1.getColumn("Ver Detalle").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
 		            e -> verDetallePedidoEstado(e))); // Acción para ver detalles
 		    
-            scrollPane.setViewportView(table);
+            scrollPane.setViewportView(table_1);
 
 		}
 
