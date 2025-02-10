@@ -89,6 +89,7 @@ public class Inicio extends JPanel {
 
         // Agregar el botón al panel
         panelBase.add(salaButton);
+        panelBase.setBackground(SystemColor.textHighlightText);
         panelBase.revalidate();
         panelBase.repaint();
     }

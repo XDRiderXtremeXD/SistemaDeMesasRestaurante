@@ -29,6 +29,7 @@ public class RealizarPedidoView extends JPanel {
     private JScrollPane scrollPanePedidos, scrollPanePlatos;
     private JLabel lblMontoPagar;
     private Map<Integer, Integer> mapIdPedidoPlato = new HashMap<>();
+    public int salaId, numeroMesa;
 
     public RealizarPedidoView(List<Plato> platos) {
         setPreferredSize(new Dimension(1427, 675));
@@ -508,6 +509,12 @@ public class RealizarPedidoView extends JPanel {
                 btnAgregarComen.setText("Agregar");
             }
         }
+    }
+    
+    public void setDatosPedido(int salaId, int numeroMesa) {
+        System.out.println("Sala ID: " + salaId + " - Mesa: " + numeroMesa);
+        this.salaId = salaId;
+        this.numeroMesa = numeroMesa;
     }
     
     private void realizarPedido() {

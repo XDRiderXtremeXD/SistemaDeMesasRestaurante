@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import components.CustomButton;
 import components.CustomButtonEditorTable;
 import components.CustomTable;
 import controller.PedidoController;
@@ -63,7 +64,7 @@ public class PedidosActualesView extends JPanel {
     		ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
     				
     		table.getColumn("Ver/Estado").setCellRenderer(new ButtonRenderer(iconoDetalle));
-    		table.getColumn("Ver/Estado").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
+    		table.getColumn("Ver/Estado").setCellEditor(new CustomButtonEditorTable(iconoDetalle,
     				e -> verDetallePedidoEstado(e, this))); 
             
         

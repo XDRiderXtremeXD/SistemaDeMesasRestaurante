@@ -70,15 +70,18 @@ public class Dashboard extends JFrame implements ActionListener {
 
     private void initComponents() {
         JPanel headerImage = new JPanel();
+        headerImage.setBackground(SystemColor.textHighlightText);
         JLabel lblHeaderImage = new JLabel(new ImageIcon(getClass().getResource("/imgs/fondo.png")));
         headerImage.add(lblHeaderImage);
         getContentPane().add(headerImage, BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         FooterOptions = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        FooterOptions.setBackground(SystemColor.textHighlightText);
         mainPanel.add(FooterOptions, BorderLayout.SOUTH);
 
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane.setBackground(SystemColor.textHighlightText);
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         getContentPane().add(mainPanel, BorderLayout.CENTER);
 

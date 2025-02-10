@@ -1,6 +1,7 @@
 package components;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -19,8 +20,16 @@ public class CustomButton extends JButton {
     private static final long serialVersionUID = 1L;
     private int shadowBlurRadius = 5; // Valor inicial para el difuminado
 
+    private int round = 10;
+    private Color shadowColor = new Color(170, 170, 170);
+    private BufferedImage imageShadow;
+    private final Insets shadowSize = new Insets(2, 5, 8, 5);
+    private final RippleEffect rippleEffect = new RippleEffect(this);
+    
+    // Flag para controlar si se dibujan la sombra y el borde
+    private boolean shadowAndBorderEnabled = true;
 
-	public int getRound() {
+    public int getRound() {
         return round;
     }
 
@@ -48,53 +57,56 @@ public class CustomButton extends JButton {
         return rippleEffect.getRippleColor();
     }
 
-    private int round = 10;
-    private Color shadowColor = new Color(170, 170, 170);
-    private BufferedImage imageShadow;
-    private final Insets shadowSize = new Insets(2, 5, 8, 5);
-    private final RippleEffect rippleEffect = new RippleEffect(this);
-
     public CustomButton() {
         setBorder(new EmptyBorder(10, 12, 15, 12));
         setContentAreaFilled(false);
         setBackground(new Color(255, 255, 255));
         setForeground(new Color(80, 80, 80));
         rippleEffect.setRippleColor(new Color(220, 220, 220));
-        
         setFont(getFont().deriveFont(java.awt.Font.BOLD));
+        
+        setFocusPainted(false);
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        double width = getWidth() - (shadowSize.left + shadowSize.right);
-        double height = getHeight() - (shadowSize.top + shadowSize.bottom);
-        double x = shadowSize.left;
-        double y = shadowSize.top;
-
-        if (isEnabled()) {
-            g2.drawImage(imageShadow, 0, 0, null);
-        }
-
-        if (isEnabled()) {
-            g2.setColor(getBackground());
+        
+        if (shadowAndBorderEnabled) {
+            // Se usan los márgenes para la sombra y el recorte
+            double width = getWidth() - (shadowSize.left + shadowSize.right);
+            double height = getHeight() - (shadowSize.top + shadowSize.bottom);
+            double x = shadowSize.left;
+            double y = shadowSize.top;
+    
+            if (isEnabled() && imageShadow != null) {
+                g2.drawImage(imageShadow, 0, 0, null);
+            }
+    
+            g2.setColor(isEnabled() ? getBackground() : new Color(220, 220, 220));
+    
+            Area area = new Area(new RoundRectangle2D.Double(x, y, width, height, round, round));
+            g2.fill(area);
+    
+            if (isEnabled()) {
+                rippleEffect.reder(grphcs, area);
+            }
         } else {
-            g2.setColor(new Color(220, 220, 220));
+            // Se ignoran los márgenes, se utiliza el tamaño completo del botón
+            g2.setColor(isEnabled() ? getBackground() : new Color(220, 220, 220));
+            Area area = new Area(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), round, round));
+            g2.fill(area);
+    
+            if (isEnabled()) {
+                rippleEffect.reder(grphcs, area);
+            }
         }
-
-        Area area = new Area(new RoundRectangle2D.Double(x, y, width, height, round, round));
-        g2.fill(area);
-
-        if (isEnabled()) {
-            rippleEffect.reder(grphcs, area);
-        }
-
+    
         g2.dispose();
         super.paintComponent(grphcs);
     }
-
 
     @Override
     public void setEnabled(boolean enabled) {
@@ -107,7 +119,6 @@ public class CustomButton extends JButton {
         repaint();
     }
 
-    
     @Override
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
@@ -115,6 +126,11 @@ public class CustomButton extends JButton {
     }
 
     private void createImageShadow() {
+        // Si se ha deshabilitado la sombra, no se crea la imagen
+        if (!shadowAndBorderEnabled) {
+            imageShadow = null;
+            return;
+        }
         int height = getHeight();
         int width = getWidth();
         if (width > 0 && height > 0) {
@@ -122,7 +138,7 @@ public class CustomButton extends JButton {
             Graphics2D g2 = imageShadow.createGraphics();
             BufferedImage img = createShadow();
             if (img != null) {
-                g2.drawImage(createShadow(), 0, 0, null);
+                g2.drawImage(img, 0, 0, null);
             }
             g2.dispose();
         }
@@ -146,5 +162,16 @@ public class CustomButton extends JButton {
     public void setShadowBlurRadius(int i) {
         this.shadowBlurRadius = i;  // Actualiza el valor del difuminado
         repaint();  // Redibuja el botón con la nueva sombra
+    }
+    
+    /**
+     * Método para deshabilitar la sombra y los bordes.
+     * Al llamarlo, el botón se dibujará utilizando todo su ancho y alto sin recortes
+     * ni sombra.
+     */
+    public void disableShadowAndBorder() {
+        shadowAndBorderEnabled = false;
+        setBorder(null);
+        repaint();
     }
 }
