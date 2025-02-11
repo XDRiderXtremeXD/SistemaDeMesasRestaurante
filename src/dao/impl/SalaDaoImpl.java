@@ -82,22 +82,36 @@ public class SalaDaoImpl implements ISalaDao {
     }
 
     @Override
-    public boolean actualizarSala(Sala sala) {
-        String sql = "UPDATE Sala SET Nombre = ?, Mesas = ? WHERE IdSala = ?";
+    public Sala actualizarSala(Sala sala) {
+    	Connection cn = null;
+        PreparedStatement psm = null;
         
-        try (Connection cn = MySqlConexion.getConexion();
-             PreparedStatement psm = cn.prepareStatement(sql)) {
-
+        try {
+        	cn = MySqlConexion.getConexion();
+            String sql = "UPDATE Sala SET Nombre = ?, Mesas = ? WHERE IdSala = ?";
+            psm = cn.prepareStatement(sql);
+            
             psm.setString(1, sala.getNombre());
             psm.setInt(2, sala.getMesas());
             psm.setInt(3, sala.getIdSala());
 
             int resultado = psm.executeUpdate();
-            return resultado > 0;
+            
+            if (resultado == 0) {
+	            System.out.println("No se encontró el plato con el ID proporcionado.");
+	        }
+            
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (psm != null) psm.close();
+	            if (cn != null) cn.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+        return sala;
     }
 
     @Override

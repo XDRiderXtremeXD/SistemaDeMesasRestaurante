@@ -33,7 +33,7 @@ public class DetallePedidoDaoImpl implements IDetallePedidoDao{
                 detalle.setPrecio(rs.getBigDecimal("Precio"));
                 detalle.setCantidad(rs.getInt("Cantidad"));
                 detalle.setComentario(rs.getString("Comentario"));
-                detalle.setIdDetallePedido(rs.getInt("PedidoId"));
+                detalle.setIdPedido(rs.getInt("PedidoId"));
                 
                 lista.add(detalle);
             }
@@ -72,7 +72,7 @@ public class DetallePedidoDaoImpl implements IDetallePedidoDao{
                 detalle.setPrecio(rs.getBigDecimal("Precio"));
                 detalle.setCantidad(rs.getInt("Cantidad"));
                 detalle.setComentario(rs.getString("Comentario"));
-                detalle.setIdDetallePedido(rs.getInt("PedidoId"));
+                detalle.setIdPedido(rs.getInt("PedidoId"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,7 +103,7 @@ public class DetallePedidoDaoImpl implements IDetallePedidoDao{
             psm.setBigDecimal(2, detalle.getPrecio());
             psm.setInt(3, detalle.getCantidad());
             psm.setString(4, detalle.getComentario());
-            psm.setInt(5, detalle.getIdDetallePedido());
+            psm.setInt(5, detalle.getIdPedido());
             
             int rowsAffected = psm.executeUpdate();
             if (rowsAffected > 0) {

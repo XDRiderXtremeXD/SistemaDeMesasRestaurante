@@ -32,10 +32,10 @@ public class Inicio extends JPanel {
         setLayout(new BorderLayout()); 
 
         panelBase = new JPanel();
-        panelBase.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Espaciado entre botones
+        panelBase.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         
         scrollPane = new JScrollPane(panelBase);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // Habilita scroll horizontal
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(1050, 100));
 
         add(scrollPane, BorderLayout.CENTER);
@@ -48,52 +48,47 @@ public class Inicio extends JPanel {
         }
     }
 
-    public void agregarSalaPanel(Sala sala) {
-        // Crear un nuevo CustomButton
+    public void agregarSalaPanel(final Sala sala) {
         CustomButton salaButton = new CustomButton();
         
-        // Cargar la imagen
-        ImageIcon imagenSala = new ImageIcon(getClass().getResource("/imgs/sala.png")); // Cambia la ruta a la ubicación de tu imagen
+        ImageIcon imagenSala = new ImageIcon(getClass().getResource("/imgs/sala.png"));
         Image img = imagenSala.getImage();
-        Image newImg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH); // Ajusta el tamaño de la imagen
+        Image newImg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
         ImageIcon iconoEscalado = new ImageIcon(newImg);
         
-        // Establecer el icono de la imagen
         salaButton.setIcon(iconoEscalado);
-        
-        // Establecer el texto debajo de la imagen
         salaButton.setText(sala.getNombre());
         salaButton.setFont(new Font("Arial", Font.BOLD, 15));
         salaButton.setPreferredSize(new Dimension(200, 500)); 
         salaButton.setBackground(Color.BLACK);
         salaButton.setForeground(Color.WHITE);
-        salaButton.setShadowColor(new java.awt.Color(169, 169, 169,255));
-        salaButton.setShadowBlurRadius(10);  // Ajusta el radio de difuminado de la sombra
+        salaButton.setShadowColor(new Color(169, 169, 169, 255));
+        salaButton.setShadowBlurRadius(10);
         salaButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         salaButton.setRound(30);
-        
-        // Usar un BoxLayout para apilar la imagen sobre el texto
-        salaButton.setLayout(new BoxLayout(salaButton, BoxLayout.Y_AXIS)); // Layout vertical (imagen arriba, texto abajo)
-        salaButton.setHorizontalAlignment(SwingConstants.CENTER); // Centra la imagen y el texto
-        
-        // La imagen debería tener un tamaño fijo
+        salaButton.setLayout(new BoxLayout(salaButton, BoxLayout.Y_AXIS));
+        salaButton.setHorizontalAlignment(SwingConstants.CENTER);
         salaButton.setIconTextGap(10);
-
-        // Agregar acción al botón
+        
+        salaButton.putClientProperty("salaId", sala.getIdSala());
+        salaButton.putClientProperty("mesas", sala.getMesas());
+        
         salaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JButton btn = (JButton) e.getSource();
+                int id = (Integer) btn.getClientProperty("salaId");
+                int mesas = (Integer) btn.getClientProperty("mesas");
+                mesasView.agregarMesasPanel(id, mesas);
                 tabbedPane.setSelectedComponent(mesasView);
             }
         });
-
-        // Agregar el botón al panel
+        
         panelBase.add(salaButton);
         panelBase.setBackground(SystemColor.textHighlightText);
         panelBase.revalidate();
         panelBase.repaint();
     }
-
 
     public void eliminarSalaDePanel(String nombreSala) {
         for (Component component : panelBase.getComponents()) {
@@ -109,15 +104,20 @@ public class Inicio extends JPanel {
         }
     }
 
-    public void actualizarSalaPanel(String nombreAntiguo, String nuevoNombre) {
+    public void actualizarSalaPanel(int salaId, String nuevoNombre, int nuevaCantidad) {
         for (Component component : panelBase.getComponents()) {
             if (component instanceof JButton) {
                 JButton button = (JButton) component;
-                if (button.getText().equals(nombreAntiguo)) { 
-                    button.setText(nuevoNombre);  
-                    panelBase.revalidate();  
-                    panelBase.repaint();  
-                    break;
+                Object idObj = button.getClientProperty("salaId");
+                if (idObj instanceof Integer) {
+                    int id = (Integer) idObj;
+                    if (id == salaId) {
+                        button.setText(nuevoNombre);
+                        button.putClientProperty("mesas", nuevaCantidad);
+                        panelBase.revalidate();
+                        panelBase.repaint();
+                        break;
+                    }
                 }
             }
         }

@@ -37,15 +37,20 @@ public class PedidoController {
         return null;
     }
 
-    public boolean crearPedido(Pedido pedido) {
-        boolean creado = pedidoDao.createPedido(pedido);
-        if (creado) {
-            listPedidos.add(pedido);
-            System.out.println("Pedido creado con ID: " + pedido.getIdPedido());
-        } else {
-            System.out.println("Error al crear el pedido.");
+    public Pedido crearPedido(Pedido pedido) {
+    	Pedido registrar = null;
+        try {
+            registrar = pedidoDao.createPedido(pedido);
+            if (registrar != null && registrar.getIdPedido() > 0) {
+            	listPedidos.add(pedido);
+            } else {
+            	System.out.println("Error al crear el pedido.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Ocurrió un error al registrar el pedido.");
         }
-        return creado;
+        return registrar;
     }
 
     public void actualizarPedido(Pedido pedido) {

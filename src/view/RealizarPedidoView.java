@@ -11,13 +11,22 @@ import components.CustomAlert;
 import components.CustomButton;
 import components.CustomTable;
 import components.CustomTextField;
+import controller.DetallePedidoController;
+import controller.PedidoController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.DetallePedido;
+import model.Pedido;
 import model.Plato;
+import model.Usuario;
+import raven.glasspanepopup.GlassPanePopup;
+
 import java.awt.*;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class RealizarPedidoView extends JPanel {
@@ -26,12 +35,19 @@ public class RealizarPedidoView extends JPanel {
     private DefaultTableModel tableModelPedidos, tableModelPlatos;
     private CustomTextField txtComentario, txtBuscar;
     private CustomButton btnAgregarComen, btnEliminarPedido, btnRealizarPedido, btnAgregarPlato;
-    private JScrollPane scrollPanePedidos, scrollPanePlatos;
+    private JScrollPane scrollPanePedidos, scrollPaneProductos;
     private JLabel lblMontoPagar;
     private Map<Integer, Integer> mapIdPedidoPlato = new HashMap<>();
     public int salaId, numeroMesa;
+    private PedidoController pedidoController;
+    private DetallePedidoController detallePedidoController;
+    private Usuario usuario;
 
-    public RealizarPedidoView(List<Plato> platos) {
+    public RealizarPedidoView(List<Plato> platos, Usuario usuario) {
+    	pedidoController = new PedidoController();
+    	detallePedidoController = new DetallePedidoController();
+    	this.usuario = usuario;
+    	
         setPreferredSize(new Dimension(1427, 675));
         setLayout(new GridBagLayout());
 
@@ -100,7 +116,7 @@ public class RealizarPedidoView extends JPanel {
         panelIzquierdo.add(panelComentario);
 
         // Tabla de Pedidos
-        String[] columnNames = {"ID", "Plato", "Precio", "Cant", "SubTotal", "Comentario"};
+        String[] columnNames = {"ID", "Producto", "Precio", "Cant", "SubTotal", "Comentario"};
         tableModelPedidos = new DefaultTableModel(columnNames, 0);
         tablaPedidos = new JTable(tableModelPedidos);
         scrollPanePedidos = new JScrollPane(tablaPedidos);
@@ -285,11 +301,11 @@ public class RealizarPedidoView extends JPanel {
         panelDerecho.add(panelBusqueda);
 
         // Tabla de Carta del Día
-        String[] columnNamesDerecho = {"ID", "Plato", "Precio"};
+        String[] columnNamesDerecho = {"ID", "Producto", "Precio"};
         tableModelPlatos = new DefaultTableModel(columnNamesDerecho, 0);
         tablaPlatos = new JTable(tableModelPlatos);
-        scrollPanePlatos = new JScrollPane(tablaPlatos);
-        CustomTable.TableCustom.apply(scrollPanePlatos, CustomTable.TableCustom.TableType.DEFAULT);
+        scrollPaneProductos = new JScrollPane(tablaPlatos);
+        CustomTable.TableCustom.apply(scrollPaneProductos, CustomTable.TableCustom.TableType.DEFAULT);
         
         tablaPlatos.setDefaultEditor(Object.class, null);
         tablaPlatos.getTableHeader().setResizingAllowed(false);
@@ -301,16 +317,16 @@ public class RealizarPedidoView extends JPanel {
         listar(platos);
 
         // Panel contenedor para la tabla derecha
-        JPanel panelTablaPlatos = new JPanel();
-        panelTablaPlatos.setBackground(SystemColor.textHighlightText);
-        panelTablaPlatos.setLayout(new BoxLayout(panelTablaPlatos, BoxLayout.X_AXIS));
+        JPanel panelTablaProductos = new JPanel();
+        panelTablaProductos.setBackground(SystemColor.textHighlightText);
+        panelTablaProductos.setLayout(new BoxLayout(panelTablaProductos, BoxLayout.X_AXIS));
         
-        panelTablaPlatos.add(Box.createRigidArea(new Dimension(30, 0)));
-        panelTablaPlatos.add(scrollPanePlatos);
-        panelTablaPlatos.add(Box.createRigidArea(new Dimension(30, 0)));
+        panelTablaProductos.add(Box.createRigidArea(new Dimension(30, 0)));
+        panelTablaProductos.add(scrollPaneProductos);
+        panelTablaProductos.add(Box.createRigidArea(new Dimension(30, 0)));
 
         panelDerecho.add(Box.createVerticalStrut(15));
-        panelDerecho.add(panelTablaPlatos);
+        panelDerecho.add(panelTablaProductos);
         panelDerecho.add(Box.createVerticalStrut(20));
 
         tablaPlatos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -364,7 +380,6 @@ public class RealizarPedidoView extends JPanel {
     private String convertirDoubleAString(double precio) {
         return "S/. " + String.format("%.2f", precio).replace('.', ',');
     }
-
     
     public void listar(List<Plato> platos) {
         DefaultTableModel tableModelDerecho = (DefaultTableModel) tablaPlatos.getModel();
@@ -512,26 +527,72 @@ public class RealizarPedidoView extends JPanel {
     }
     
     public void setDatosPedido(int salaId, int numeroMesa) {
-        System.out.println("Sala ID: " + salaId + " - Mesa: " + numeroMesa);
+    	System.out.println("Id Sala: " + salaId + " " + "Num mesa: " + numeroMesa);
         this.salaId = salaId;
         this.numeroMesa = numeroMesa;
     }
     
     private void realizarPedido() {
-    	CustomAlert.showAlert("Éxito", "El Pedido se ha realizado con éxito", "success");
+    	CustomAlert.showConfirmationAlert("Confirmación", "¿Estás seguro de realizar este pedido?",
+				evt -> {
+			        // Acción al presionar "Aceptar"
+					BigDecimal total = BigDecimal.ZERO;
+			        for (int i = 0; i < tableModelPedidos.getRowCount(); i++) {
+			            String subTotalStr = tableModelPedidos.getValueAt(i, 4).toString();
+			            double subTotalDouble = convertirStringADouble(subTotalStr);
+			            total = total.add(BigDecimal.valueOf(subTotalDouble));
+			        }
+			        
+			        Pedido pedido = new Pedido();
+			        pedido.setIdSala(this.salaId);
+			        pedido.setNumeroMesa(this.numeroMesa);
+			        pedido.setTotal(total);
+			        pedido.setEstado("Pendiente");
+			        pedido.setUsuario(usuario.getNombreUsuario());
+			        
+			        List<DetallePedido> listaDetalles = new ArrayList<>();
+			        for (int i = 0; i < tableModelPedidos.getRowCount(); i++) {
+			            DetallePedido detalle = new DetallePedido();
+			            
+			            detalle.setNombreProducto(tableModelPedidos.getValueAt(i, 1).toString());
+			            double precioDouble = convertirStringADouble(tableModelPedidos.getValueAt(i, 2).toString());
+			            detalle.setPrecio(BigDecimal.valueOf(precioDouble));
+			            detalle.setCantidad(Integer.parseInt(tableModelPedidos.getValueAt(i, 3).toString()));      
+			            Object comentarioObj = tableModelPedidos.getValueAt(i, 5);
+			            detalle.setComentario(comentarioObj != null ? comentarioObj.toString() : "");
+			            
+			            listaDetalles.add(detalle);
+			        }
+			        
+			        Pedido pedidoCreado = pedidoController.crearPedido(pedido);
+			        if (pedidoCreado != null && pedidoCreado.getIdPedido() > 0) {
 
-    	tableModelPedidos.setRowCount(0);
-        tablaPlatos.getSelectionModel().clearSelection();
-
-        txtComentario.setText("");
-
-        btnRealizarPedido.setEnabled(false);
-        btnAgregarComen.setEnabled(false);
-
-        btnAgregarComen.setText("Agregar");
-
-        mapIdPedidoPlato.clear();
-
-        lblMontoPagar.setText("S/. 00,00");
+			            for (DetallePedido detalle : listaDetalles) {
+			                detalle.setIdPedido(pedidoCreado.getIdPedido());
+			                boolean creadoDetalle = detallePedidoController.crearDetallePedido(detalle);
+			                if (!creadoDetalle) {
+			                    System.out.println("Error al crear detalle para: " + detalle.getNombreProducto());
+			                }
+			            }
+			        }
+			        
+			        tableModelPedidos.setRowCount(0);
+			        tablaPlatos.getSelectionModel().clearSelection();
+			        txtComentario.setText("");
+			        btnRealizarPedido.setEnabled(false);
+			        btnAgregarComen.setEnabled(false);
+			        btnAgregarComen.setText("Agregar");
+			        mapIdPedidoPlato.clear();
+			        lblMontoPagar.setText("S/. 00,00");
+			        
+					GlassPanePopup.closePopupLast();
+					CustomAlert.showAlert("Éxito", "El pedido se ha realizado con éxito", "success");
+			    },
+			    evt -> {
+			        // Acción al presionar "Cancelar"
+			        GlassPanePopup.closePopupLast();
+			    }
+        );
     }
+
 }

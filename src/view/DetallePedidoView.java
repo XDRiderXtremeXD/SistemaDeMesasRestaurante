@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import components.CustomButton;
 import components.CustomTable;
 import controller.DetallePedidoController;
 import controller.PedidoController;
@@ -129,10 +130,13 @@ public class DetallePedidoView extends JFrame {
         lblEstado_1.setBounds(26, 540, 113, 30);
         contentPane.add(lblEstado_1);
         
-        JButton btnCambiarEstado = new JButton(nuevoEstado);
-        btnCambiarEstado.setForeground(new Color(0, 128, 255));
-        btnCambiarEstado.setFont(new Font("Verdana", Font.PLAIN, 14));
-        btnCambiarEstado.setBounds(143, 540, 143, 30);
+        CustomButton btnCambiarEstado = new CustomButton();
+        btnCambiarEstado.setBackground(new Color(0, 123, 255));
+        btnCambiarEstado.setForeground(new Color(245, 245, 245));
+        btnCambiarEstado.setRippleColor(new Color(255, 255, 255));
+        btnCambiarEstado.setShadowColor(new Color(0, 123, 255));
+        btnCambiarEstado.setText(nuevoEstado);
+        btnCambiarEstado.setBounds(143, 540, 143, 40);
         contentPane.add(btnCambiarEstado);
         
         // Acción para actualizar el estado del pedido

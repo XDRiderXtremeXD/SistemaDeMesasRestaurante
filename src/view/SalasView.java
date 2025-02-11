@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import components.*;
 import controller.SalaController;
 import model.Sala;
+import raven.glasspanepopup.GlassPanePopup;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -99,12 +101,20 @@ public class SalasView extends JPanel implements ActionListener {
         formularioPanel.add(txtMesas);
 
         btnAgregar = new CustomButton();
+        btnAgregar.setBackground(new java.awt.Color(30, 180, 114));
+        btnAgregar.setForeground(new java.awt.Color(245, 245, 245));
+        btnAgregar.setRippleColor(new java.awt.Color(255, 255, 255));
+        btnAgregar.setShadowColor(new java.awt.Color(30, 180, 114));
         btnAgregar.setText("Agregar Sala");
         btnAgregar.setBounds(125, 244, 150, 46);
         btnAgregar.addActionListener(this);
         formularioPanel.add(btnAgregar);
 
         btnEliminar = new CustomButton();
+        btnEliminar.setBackground(new java.awt.Color(253, 83, 83));
+        btnEliminar.setForeground(new java.awt.Color(245, 245, 245));
+        btnEliminar.setRippleColor(new java.awt.Color(255, 255, 255));
+        btnEliminar.setShadowColor(new java.awt.Color(253, 83, 83));
         btnEliminar.setText("Eliminar Sala");
         btnEliminar.setBounds(125, 304, 150, 46);
         btnEliminar.setEnabled(false);
@@ -112,6 +122,10 @@ public class SalasView extends JPanel implements ActionListener {
         formularioPanel.add(btnEliminar);
 
         btnActualizar = new CustomButton();
+        btnActualizar.setBackground(new Color(0, 123, 255));
+        btnActualizar.setForeground(new Color(245, 245, 245));
+        btnActualizar.setRippleColor(new Color(255, 255, 255));
+        btnActualizar.setShadowColor(new Color(0, 123, 255));
         btnActualizar.setText("Actualizar Sala");
         btnActualizar.setBounds(125, 364, 150, 46);
         btnActualizar.setEnabled(false);
@@ -139,47 +153,51 @@ public class SalasView extends JPanel implements ActionListener {
             String numMesasText = txtMesas.getText();
 
             if (nombre.isEmpty() || numMesasText.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+            	CustomAlert.showAlert("Error", "Todos los campos son obligatorios", "error");
                 return;
             }
 
             try {
                 int numMesas = Integer.parseInt(numMesasText);
                 Sala nuevaSala = new Sala(0, nombre, numMesas);
-                controlador.registrarSala(nuevaSala);
+                Sala salaRegistrada = controlador.registrarSala(nuevaSala);
                 cargarDatosTabla();
 
                 inicioView.agregarSalaPanel(nuevaSala);
-                mesasView.agregarMesasPanel(numMesas);
+                mesasView.agregarMesasPanel(salaRegistrada.getIdSala(), numMesas);
 
                 limpiarDatos();
+                
+                CustomAlert.showAlert("Éxito", "Sala agregada correctamente", "success");
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Ingrese un número válido en Mesas", "Error", JOptionPane.ERROR_MESSAGE);
+            	CustomAlert.showAlert("Error", "Ingrese un número válido en Mesas", "error");
             }
 
         } else if (e.getSource() == btnActualizar) {
             int filaSeleccionada = tablaSalas.getSelectedRow();
             if (filaSeleccionada != -1) {
                 int idSala = (int) modelo.getValueAt(filaSeleccionada, 0);
-                String nombreAntiguo = tablaSalas.getValueAt(filaSeleccionada, 1).toString();  // Nombre antiguo de la sala
     	        String nombreNuevo = txtNombre.getText();
                 String nuevoNumMesasText = txtMesas.getText();
 
                 if (nombreNuevo.isEmpty() || nuevoNumMesasText.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                	CustomAlert.showAlert("Error", "Todos los campos son obligatorios", "error");
                     return;
                 }
 
                 try {
                     int nuevoNumMesas = Integer.parseInt(nuevoNumMesasText);
-                    controlador.actualizarSala(new Sala(idSala, nombreNuevo, nuevoNumMesas));
-                    cargarDatosTabla();          
+                    Sala salaActualizada = controlador.actualizarSala(new Sala(idSala, nombreNuevo, nuevoNumMesas));
+                    cargarDatosTabla();        
                     
-                    inicioView.actualizarSalaPanel(nombreAntiguo,nombreNuevo);
+                    inicioView.actualizarSalaPanel(salaActualizada.getIdSala(), nombreNuevo, salaActualizada.getMesas());
+                    mesasView.actualizarNumeroMesas(salaActualizada.getIdSala(), salaActualizada.getMesas());
                     
                     limpiarDatos();
+                    
+                    CustomAlert.showAlert("Éxito", "Sala actualizada correctamente", "success");
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Ingrese un número válido en Mesas", "Error", JOptionPane.ERROR_MESSAGE);
+                	CustomAlert.showAlert("Error", "Ingrese un número válido en Mesas", "error");
                 }
             }
 
@@ -188,16 +206,22 @@ public class SalasView extends JPanel implements ActionListener {
             if (filaSeleccionada != -1) {
                 int idSala = (int) modelo.getValueAt(filaSeleccionada, 0);
                 String nombreSala = tablaSalas.getValueAt(filaSeleccionada, 1).toString();
-                int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar esta sala?", "Confirmar", JOptionPane.YES_NO_OPTION);
-
-                if (confirmacion == JOptionPane.YES_OPTION) {
-                    controlador.eliminarSala(idSala);
-                    cargarDatosTabla();
-                    
-                    inicioView.eliminarSalaDePanel(nombreSala);
-                    
-                    limpiarDatos();
-                }
+                
+                CustomAlert.showConfirmationAlert("Confirmación", "¿Estás seguro de eliminar esta sala",
+        				evt -> {
+        			        // Acción al presionar "Aceptar"
+        					controlador.eliminarSala(idSala);
+            	            cargarDatosTabla();
+            	            inicioView.eliminarSalaDePanel(nombreSala);
+            	            limpiarDatos();
+        					GlassPanePopup.closePopupLast();
+        					CustomAlert.showAlert("Éxito", "Sala eliminada correctamente", "success");
+        			    },
+        			    evt -> {
+        			        // Acción al presionar "Cancelar"
+        			        GlassPanePopup.closePopupLast();
+        			    }
+                );
             }
         }
     }
@@ -209,11 +233,6 @@ public class SalasView extends JPanel implements ActionListener {
            System.out.println("ID: " + sala.getIdSala());
            System.out.println("Nombre: " + sala.getNombre());
            System.out.println("Mesas: " + sala.getMesas());
-       }
-       
-     
-       public static void mostrarMensaje(String mensaje) {
-           JOptionPane.showMessageDialog(null, mensaje);
        }
        
        public void limpiarDatos() {

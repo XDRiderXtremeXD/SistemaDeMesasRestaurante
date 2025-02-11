@@ -8,6 +8,6 @@ public interface ISalaDao {
 	List<Sala> listarSalas();
 	Sala obtenerSalaPorId(int id);
 	Sala registrarSala(Sala sala);
-	boolean actualizarSala(Sala sala);
+	Sala actualizarSala(Sala sala);
 	boolean eliminarSala(int id);
 }

@@ -97,10 +97,9 @@ public class PedidoDaoImpl implements IPedidoDao{
     }
 
     @Override
-    public boolean createPedido(Pedido pedido) {
+    public Pedido createPedido(Pedido pedido) {
         Connection cn = null;
         PreparedStatement psm = null;
-        boolean creado = false;
         
         try {
             cn = MySqlConexion.getConexion();
@@ -119,7 +118,6 @@ public class PedidoDaoImpl implements IPedidoDao{
                 ResultSet rs = psm.getGeneratedKeys();
                 if (rs.next()) {
                     pedido.setIdPedido(rs.getInt(1));
-                    creado = true;
                 }
                 rs.close();
             }
@@ -133,7 +131,7 @@ public class PedidoDaoImpl implements IPedidoDao{
                 e.printStackTrace();
             }
         }
-        return creado;
+        return pedido;
     }
 
     @Override

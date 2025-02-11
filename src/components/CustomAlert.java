@@ -68,17 +68,13 @@ public class CustomAlert extends javax.swing.JPanel {
         GlassPanePopup.showPopup(alertPanel);
     }
 
-    public static void showConfirmationAlert(String title, String alertMessage, String type, ActionListener acceptAction, ActionListener cancelAction) {
+    public static void showConfirmationAlert(String title, String alertMessage, ActionListener acceptAction, ActionListener cancelAction) {
         CustomAlert confirmAlertPanel = new CustomAlert();
         confirmAlertPanel.setAlertTitleText(title);
         confirmAlertPanel.setAlertMessageText(alertMessage);
         confirmAlertPanel.showCancelButton(true);
-
-        if ("error".equals(type)) {
-            confirmAlertPanel.setButtonColor(confirmAlertPanel.btnAccept, new Color(253, 83, 83), new Color(253, 83, 83));
-        } else if ("success".equals(type)) {
-            confirmAlertPanel.setButtonColor(confirmAlertPanel.btnAccept, new Color(30, 180, 114), new Color(30, 180, 114));
-        }
+        
+        confirmAlertPanel.setButtonColor(confirmAlertPanel.btnAccept, new Color(30, 180, 114), new Color(30, 180, 114));
 
         confirmAlertPanel.setAcceptAction(acceptAction);
         confirmAlertPanel.setCancelAction(cancelAction);
