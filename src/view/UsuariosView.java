@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableModel;
 import components.*;
 import controller.UsuarioController;
 import model.Usuario;
+import raven.glasspanepopup.GlassPanePopup;
 
 public class UsuariosView extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -300,29 +301,44 @@ public class UsuariosView extends JPanel {
         btnEliminar.addActionListener(e -> {
             int[] filasSeleccionadas = tablaUsuarios.getSelectedRows();
             if (filasSeleccionadas.length > 0) {
-                UsuarioController usuarioController = new UsuarioController();
-                boolean algunEliminado = false;
-                int usuariosEliminados = 0;
+                CustomAlert.showConfirmationAlert(
+                    "Confirmación", 
+                    "¿Estás seguro de eliminar el(los) usuario(s)?",
+                    evt -> {
+                        // Acción al presionar "Aceptar"
+                        UsuarioController usuarioController = new UsuarioController();
+                        boolean algunEliminado = false;
+                        int usuariosEliminados = 0;
 
-                for (int i = filasSeleccionadas.length - 1; i >= 0; i--) {
-                    int fila = filasSeleccionadas[i];
-                    int idUsuario = (int) tableModel.getValueAt(fila, 0);
+                        for (int i = filasSeleccionadas.length - 1; i >= 0; i--) {
+                            int fila = filasSeleccionadas[i];
+                            int idUsuario = (int) tableModel.getValueAt(fila, 0);
+                            boolean eliminado = usuarioController.eliminar(idUsuario);
+                            if (eliminado) {
+                                tableModel.removeRow(fila);
+                                algunEliminado = true;
+                                usuariosEliminados++;
+                            }
+                        }
+                        GlassPanePopup.closePopupLast();
 
-                    boolean eliminado = usuarioController.eliminar(idUsuario);
-                    if (eliminado) {
-                        tableModel.removeRow(fila);
-                        algunEliminado = true;
-                        usuariosEliminados++;
+                        if (algunEliminado) {
+                            String mensaje = (usuariosEliminados == 1) 
+                                ? "El usuario ha sido eliminado" 
+                                : "Los usuarios han sido eliminados";
+                            CustomAlert.showAlert("Éxito", mensaje, "success");
+                        } else {
+                            String mensajeError = (filasSeleccionadas.length == 1) 
+                                ? "No se pudo eliminar el usuario" 
+                                : "No se pudieron eliminar los usuarios";
+                            CustomAlert.showAlert("Error", mensajeError, "error");
+                        }
+                    },
+                    evt -> {
+                        // Acción al presionar "Cancelar"
+                        GlassPanePopup.closePopupLast();
                     }
-                }
-
-                if (algunEliminado) {
-                    String mensaje = (usuariosEliminados == 1) ? "El usuario ha sido eliminado" : "Los usuarios han sido eliminados";
-                    CustomAlert.showAlert("Éxito", mensaje, "success");
-                } else {
-                    String mensajeError = (filasSeleccionadas.length == 1) ? "No se pudo eliminar el usuario" : "No se pudieron eliminar los usuarios";
-                    CustomAlert.showAlert("Error", mensajeError, "error");
-                }
+                );
             }
         });
         

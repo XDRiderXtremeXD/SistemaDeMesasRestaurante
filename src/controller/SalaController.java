@@ -20,7 +20,7 @@ public class SalaController {
             return salaDao.listarSalas();
         } catch (Exception e) {
             e.printStackTrace();
-            SalasView.mostrarMensaje("Error al obtener la lista de salas.");
+            System.out.println("Error al obtener la lista de salas.");
             return null;
         }
     }
@@ -31,53 +31,57 @@ public class SalaController {
             if (sala != null) {
                 SalasView.mostrarSala(sala);
             } else {
-                SalasView.mostrarMensaje("Sala no encontrada con ID: " + idSala);
+            	System.out.println("Sala no encontrada con ID: " + idSala);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            SalasView.mostrarMensaje("Error al obtener la sala.");
+            System.out.println("Error al obtener la sala.");
         }
     }
     
-    public void registrarSala(Sala sala) {
+    public Sala registrarSala(Sala sala) {
+        Sala registrar = null;
         try {
-            Sala registrar = salaDao.registrarSala(sala);
+            registrar = salaDao.registrarSala(sala);
             if (registrar != null && registrar.getIdSala() > 0) {
-                SalasView.mostrarMensaje("Sala registrada exitosamente: " + registrar.getNombre());
+            	System.out.println("Sala registrada exitosamente: " + registrar.getNombre());
             } else {
-                SalasView.mostrarMensaje("Error al registrar la sala");
+            	System.out.println("Error al registrar la sala");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            SalasView.mostrarMensaje("Ocurrió un error al registrar la sala.");
+            System.out.println("Ocurrió un error al registrar la sala.");
         }
+        return registrar;
     }
 
-    public void actualizarSala(Sala sala) {
+    public Sala actualizarSala(Sala sala) {
+    	Sala actualizar = null;
         try {
-            boolean actualizar = salaDao.actualizarSala(sala);
-            if (actualizar) {
-                SalasView.mostrarMensaje("Sala actualizada exitosamente: " + sala.getNombre());
+            actualizar = salaDao.actualizarSala(sala);
+            if (actualizar != null && actualizar.getIdSala() > 0) {
+            	System.out.println("Sala actualizada exitosamente: " + sala.getNombre());
             } else {
-                SalasView.mostrarMensaje("Error al actualizar la sala con ID: " + sala.getIdSala());
+            	System.out.println("Error al actualizar la sala con ID: " + sala.getIdSala());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            SalasView.mostrarMensaje("Error al actualizar la sala.");
+            System.out.println("Error al actualizar la sala.");
         }
+        return actualizar;
     }
     
     public void eliminarSala(int idSala) {
         try {
             boolean eliminar = salaDao.eliminarSala(idSala);
             if (eliminar) {
-                SalasView.mostrarMensaje("Sala eliminada exitosamente");
+            	System.out.println("Sala eliminada exitosamente");
             } else {
-                SalasView.mostrarMensaje("Error al eliminar la sala");
+            	System.out.println("Error al eliminar la sala");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            SalasView.mostrarMensaje("Error al eliminar la sala.");
+            System.out.println("Error al eliminar la sala.");
         }
     }
 }

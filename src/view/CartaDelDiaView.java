@@ -10,6 +10,8 @@ import controller.PlatoController;
 
 import java.util.List;
 import model.Plato;
+import raven.glasspanepopup.GlassPanePopup;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -18,7 +20,7 @@ import java.text.DecimalFormat;
 public class CartaDelDiaView extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    private JTable tablaPlatos;
+    private JTable tablaProductos;
     private DefaultTableModel tableModel;
     private CustomButton btnAgregar;
     private CustomButton btnEliminar;
@@ -30,7 +32,7 @@ public class CartaDelDiaView extends JPanel {
         setPreferredSize(new Dimension(1427, 675));
         setLayout(new BorderLayout());
 
-        String[] columnNames = {"ID", "Nombre", "Precio", "Fecha"};
+        String[] columnNames = {"ID", "Producto", "Precio", "Fecha"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             private static final long serialVersionUID = 1L;
 
@@ -40,12 +42,12 @@ public class CartaDelDiaView extends JPanel {
             }
         };
 
-        tablaPlatos = new JTable(tableModel);
-        tablaPlatos.getTableHeader().setReorderingAllowed(false);
-        tablaPlatos.getColumnModel().getColumn(0).setPreferredWidth(50);
-        tablaPlatos.getColumnModel().getColumn(1).setPreferredWidth(200);
-        tablaPlatos.getColumnModel().getColumn(2).setPreferredWidth(100);
-        tablaPlatos.getColumnModel().getColumn(3).setPreferredWidth(150);
+        tablaProductos = new JTable(tableModel);
+        tablaProductos.getTableHeader().setReorderingAllowed(false);
+        tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(200);
+        tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(100);
+        tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(150);
 
         JPanel tablaPanel = new JPanel(new BorderLayout());
         tablaPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
@@ -78,7 +80,7 @@ public class CartaDelDiaView extends JPanel {
         tablaPanel.add(searchPanel, BorderLayout.NORTH);
         
         // ScrollPane con la tabla
-        JScrollPane scrollPane = new JScrollPane(tablaPlatos);
+        JScrollPane scrollPane = new JScrollPane(tablaProductos);
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
         tablaPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -97,14 +99,14 @@ public class CartaDelDiaView extends JPanel {
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         formularioPanel.add(lblTitulo);
 
-        JLabel lblNombre = new JLabel("Nombre del Plato");
+        JLabel lblNombre = new JLabel("Nombre del Producto");
         lblNombre.setFont(new Font("Arial", Font.PLAIN, 14));
         lblNombre.setBounds(55, 80, 295, 20);
         formularioPanel.add(lblNombre);
 
         txtNombre = new CustomTextField();
         txtNombre.setBounds(50, 110, 300, 40);
-        txtNombre.setPlaceholder("Ingresa el nombre del plato");
+        txtNombre.setPlaceholder("Ingresa el nombre del producto");
         formularioPanel.add(txtNombre);
 
         JLabel lblPrecio = new JLabel("Precio S/.");
@@ -142,7 +144,7 @@ public class CartaDelDiaView extends JPanel {
         btnAgregar.setForeground(new java.awt.Color(245, 245, 245));
         btnAgregar.setRippleColor(new java.awt.Color(255, 255, 255));
         btnAgregar.setShadowColor(new java.awt.Color(30, 180, 114));
-        btnAgregar.setText("Agregar Plato");
+        btnAgregar.setText("Agregar Producto");
         btnAgregar.setBounds(125, 244, 150, 46);
         btnAgregar.setEnabled(false);
         btnAgregar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -225,9 +227,9 @@ public class CartaDelDiaView extends JPanel {
                     row[3] = platoCreado.getFecha();
                     tableModel.addRow(row);
                     
-                    CustomAlert.showAlert("Éxito", "El plato ha sido agregado correctamente", "success");
+                    CustomAlert.showAlert("Éxito", "El producto ha sido agregado correctamente", "success");
                 } else {
-                    CustomAlert.showAlert("Error", "No se pudo agregar el plato", "error");
+                    CustomAlert.showAlert("Error", "No se pudo agregar el producto", "error");
                 }
 
                 txtNombre.setText("");
@@ -245,59 +247,75 @@ public class CartaDelDiaView extends JPanel {
         btnEliminar.setForeground(new java.awt.Color(245, 245, 245));
         btnEliminar.setRippleColor(new java.awt.Color(255, 255, 255));
         btnEliminar.setShadowColor(new java.awt.Color(253, 83, 83));
-        btnEliminar.setText("Eliminar Plato");
+        btnEliminar.setText("Eliminar Producto");
         btnEliminar.setBounds(125, 304, 150, 46);
         btnEliminar.setEnabled(false);
         btnEliminar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         formularioPanel.add(btnEliminar);
 
-        tablaPlatos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        tablaProductos.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        tablaPlatos.getSelectionModel().addListSelectionListener(e -> {
-            boolean seleccionValida = tablaPlatos.getSelectedRowCount() > 0;
+        tablaProductos.getSelectionModel().addListSelectionListener(e -> {
+            boolean seleccionValida = tablaProductos.getSelectedRowCount() > 0;
             btnEliminar.setEnabled(seleccionValida);
         });
 
         btnEliminar.addActionListener(e -> {
-            int[] filasSeleccionadas = tablaPlatos.getSelectedRows();
+            int[] filasSeleccionadas = tablaProductos.getSelectedRows();
             if (filasSeleccionadas.length > 0) {
-                PlatoController platoController = new PlatoController();
-                boolean algunEliminado = false;
-                int platosEliminados = 0;
+                CustomAlert.showConfirmationAlert(
+                    "Confirmación", 
+                    "¿Estás seguro de eliminar el(los) producto(s)?",
+                    evt -> {
+                        // Acción al presionar "Aceptar"
+                        PlatoController platoController = new PlatoController();
+                        boolean algunEliminado = false;
+                        int platosEliminados = 0;
 
-                for (int i = filasSeleccionadas.length - 1; i >= 0; i--) {
-                    int fila = filasSeleccionadas[i];
-                    int idPlato = (int) tableModel.getValueAt(fila, 0);
+                        for (int i = filasSeleccionadas.length - 1; i >= 0; i--) {
+                            int fila = filasSeleccionadas[i];
+                            int idPlato = (int) tableModel.getValueAt(fila, 0);
 
-                    boolean eliminado = platoController.eliminar(idPlato);
-                    if (eliminado) {
-                        tableModel.removeRow(fila);
-                        algunEliminado = true;
-                        platosEliminados++;
+                            boolean eliminado = platoController.eliminar(idPlato);
+                            if (eliminado) {
+                                tableModel.removeRow(fila);
+                                algunEliminado = true;
+                                platosEliminados++;
+                            }
+                        }
+                        GlassPanePopup.closePopupLast();
+
+                        if (algunEliminado) {
+                            String mensaje = (platosEliminados == 1) 
+                                ? "El producto ha sido eliminado" 
+                                : "Los productos han sido eliminados";
+                            CustomAlert.showAlert("Éxito", mensaje, "success");
+                        } else {
+                            String mensajeError = (filasSeleccionadas.length == 1) 
+                                ? "No se pudo eliminar el producto" 
+                                : "No se pudieron eliminar los productos";
+                            CustomAlert.showAlert("Error", mensajeError, "error");
+                        }
+                    },
+                    evt -> {
+                        // Acción al presionar "Cancelar"
+                        GlassPanePopup.closePopupLast();
                     }
-                }
-
-                if (algunEliminado) {
-                    String mensaje = (platosEliminados == 1) ? "El plato ha sido eliminado" : "Los platos han sido eliminados";
-                    CustomAlert.showAlert("Éxito", mensaje, "success");
-                } else {
-                    String mensajeError = (filasSeleccionadas.length == 1) ? "No se pudo eliminar el plato" : "No se pudieron eliminar los platos";
-                    CustomAlert.showAlert("Error", mensajeError, "error");
-                }
+                );
             }
         });
 
         txtNombre.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
-                tablaPlatos.clearSelection();
+                tablaProductos.clearSelection();
             }
         });
 
         txtPrecio.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(java.awt.event.FocusEvent e) {
-                tablaPlatos.clearSelection();
+                tablaProductos.clearSelection();
             }
         });
         
@@ -320,7 +338,7 @@ public class CartaDelDiaView extends JPanel {
     }
     
     private void buscarPlatos(String query, List<Plato> platos) {
-        DefaultTableModel tableModelDerecho = (DefaultTableModel) tablaPlatos.getModel();
+        DefaultTableModel tableModelDerecho = (DefaultTableModel) tablaProductos.getModel();
         tableModelDerecho.setRowCount(0);
 
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
@@ -352,7 +370,7 @@ public class CartaDelDiaView extends JPanel {
 
         btnAgregar.setEnabled(false);
         
-        tablaPlatos.clearSelection();
+        tablaProductos.clearSelection();
         
         formularioPanel.requestFocus();
     }

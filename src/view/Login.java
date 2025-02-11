@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.prefs.Preferences;
 
 import components.*;
 import controller.UsuarioController;
@@ -33,6 +34,7 @@ public class Login extends JFrame {
         setIconImage(logoIcon.getImage());
 
         getContentPane().setLayout(new GridBagLayout());
+        getContentPane().setBackground(new Color(240, 240, 240));
 
         mainPanel = new RoundPanel();
         mainPanel.setRoundTopRight(20);
@@ -94,6 +96,7 @@ public class Login extends JFrame {
             } else {
                 Usuario usuario = usuarioController.login(username, password);
                 if (usuario != null) {
+                	guardarSesion(usuario);
                     redirectToDashboard(usuario);
                 } else {
                     CustomAlert.showAlert("Error", "Usuario y/o contraseña incorrectos.", "error");
@@ -189,7 +192,31 @@ public class Login extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            Preferences prefs = Preferences.userNodeForPackage(Login.class);
+            String idUser = prefs.get("id", "0");
+            int iduserGuardado = Integer.parseInt(idUser);
+            String usernameGuardado = prefs.get("username", null);
+            String emailGuardado = prefs.get("email", null);
+            String passGuardado = prefs.get("password", null);
+            String roleGuardado = prefs.get("role", null);
+
+            if (usernameGuardado != null) {
+                Usuario usuario = new Usuario(iduserGuardado, usernameGuardado, emailGuardado, passGuardado, roleGuardado);
+                new Dashboard(usuario).setVisible(true);
+            } else {
+                new Login().setVisible(true);
+            }
+        });
+    }
+    
+    private void guardarSesion(Usuario usuario) {
+        Preferences prefs = Preferences.userNodeForPackage(Login.class);
+        prefs.put("id", String.valueOf(usuario.getIdUsuario()));
+        prefs.put("username", usuario.getNombreUsuario());
+        prefs.put("email", usuario.getCorreo());
+        prefs.put("password", usuario.getContrasena());
+        prefs.put("role", usuario.getRol());
     }
     
     private void redirectToDashboard(Usuario usuario) {

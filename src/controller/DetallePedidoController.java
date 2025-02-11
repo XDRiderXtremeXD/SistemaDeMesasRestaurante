@@ -37,7 +37,6 @@ public class DetallePedidoController {
         boolean creado = detallePedidoDao.createDetallePedido(detalle);
         if (creado) {
             listDetallePedidos.add(detalle);
-            System.out.println("Detalle de Pedido creado con ID: " + detalle.getIdDetallePedido());
         } else {
             System.out.println("Error al crear el detalle de pedido.");
         }

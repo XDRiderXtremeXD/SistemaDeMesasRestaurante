@@ -1,13 +1,12 @@
 package view;
 
 import javax.swing.*;
-
 import components.CustomButton;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.awt.*;
+import controller.PlatoController;
 import controller.SalaController;
 import model.Sala;
 
@@ -17,8 +16,8 @@ public class MesasView extends JPanel {
     private JPanel panelBase;
     private SalaController controlador;
     private JTabbedPane tabbedPane;
-    private RealizarPedidoView realizarPedidoView;  // Asegúrate de que tienes esta clase
-    private int cantidadMesas;
+    private RealizarPedidoView realizarPedidoView;
+    private PlatoController platoController;
     private JScrollPane scrollPane;
 
     public MesasView(SalaController controlador, JTabbedPane tabbedPane, RealizarPedidoView realizarPedidoView) {
@@ -30,6 +29,7 @@ public class MesasView extends JPanel {
     }
 
     private void initComponents() {
+        platoController = new PlatoController();
         setSize(1100, 600);
         setLayout(new BorderLayout());
 
@@ -40,7 +40,7 @@ public class MesasView extends JPanel {
         // Creamos el JScrollPane para permitir desplazamiento en el panel de mesas
         scrollPane = new JScrollPane(panelBase);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // Habilita scroll horizontal
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);  // Habilita s
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);  
 
         // Añadimos el JScrollPane al panel principal
         add(scrollPane, BorderLayout.CENTER);
@@ -49,75 +49,56 @@ public class MesasView extends JPanel {
     private void cargarMesasPanel() {
         List<Sala> salas = controlador.listarSalas();
         for (Sala sala : salas) {
-            agregarMesasPanel(sala.getMesas());
+            agregarMesasPanel(sala.getIdSala(), sala.getMesas());
         }
     }
 
-    public void agregarMesasPanel(int cantidad) {
-        panelBase.removeAll();  // Limpiar cualquier mesa anterior
-        this.cantidadMesas = cantidad;  // Actualizar la cantidad de mesas
-
-        int posX = 10;  // Posición inicial en X
-        int posY = 10;  // Posición inicial en Y
-        int espacio = 15;  // Espacio entre botones
-        int columnas = 5;  // Número de columnas por fila
+    public void agregarMesasPanel(final int salaId, int cantidad) {
+        panelBase.removeAll();  // Limpia los botones existentes
         int anchoBoton = 240;  // Ancho de cada botón
-        int altoBoton = 240;  // Alto de cada botón
+        int altoBoton = 240;   // Alto de cada botón
 
-        for (int i = 1; i <= cantidadMesas; i++) {
+        for (int i = 1; i <= cantidad; i++) {
+            final int mesaNumber = i;
+
             CustomButton btnMesa = new CustomButton(); 
-            
-            // Cargar la imagen
-            ImageIcon imagenMesa = new ImageIcon(getClass().getResource("/imgs/mesa.png")); // Cambia la ruta a la ubicación de tu imagen
+                
+            // Cargar y ajustar la imagen
+            ImageIcon imagenMesa = new ImageIcon(getClass().getResource("/imgs/mesa.png"));
             Image img = imagenMesa.getImage();
-            Image newImg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH); // Ajusta el tamaño de la imagen
+            Image newImg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
             ImageIcon iconoEscalado = new ImageIcon(newImg);
-            
-            // Establecer la imagen en el botón
+                
+            // Configurar el botón
             btnMesa.setIcon(iconoEscalado);
-            
-            // Establecer el texto debajo de la imagen
-            btnMesa.setText("Mesa " + i);
+            btnMesa.setText("Mesa " + mesaNumber);
             btnMesa.setFont(new Font("Arial", Font.BOLD, 15));
-            btnMesa.setPreferredSize(new Dimension(anchoBoton, altoBoton)); // Tamaño uniforme
-            btnMesa.setBackground(new Color(0, 100, 0)); // Verde oscuro
+            btnMesa.setPreferredSize(new Dimension(anchoBoton, altoBoton));
+            btnMesa.setBackground(new Color(0, 100, 0));
             btnMesa.setForeground(Color.WHITE);
-            btnMesa.setShadowColor(new java.awt.Color(0, 0, 0,255));
+            btnMesa.setShadowColor(new Color(0, 0, 0, 255));
             btnMesa.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             btnMesa.setRound(360);
-            
-            // Usar un BoxLayout para apilar la imagen sobre el texto
-            btnMesa.setLayout(new BoxLayout(btnMesa, BoxLayout.Y_AXIS)); // Layout vertical (imagen arriba, texto abajo)
-            btnMesa.setHorizontalAlignment(SwingConstants.CENTER); // Centrar la imagen y el texto
-            btnMesa.setIconTextGap(10); // Espacio entre la imagen y el texto
+            btnMesa.setLayout(new BoxLayout(btnMesa, BoxLayout.Y_AXIS));
+            btnMesa.setHorizontalAlignment(SwingConstants.CENTER);
+            btnMesa.setIconTextGap(10);
 
-            // Agregar acción al botón
+            // Al hacer clic en la mesa, se pasa el salaId y el número de mesa a RealizarPedidoView
             btnMesa.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    tabbedPane.setSelectedComponent(realizarPedidoView);  // Cambiar a la vista de platos
+                    realizarPedidoView.listar(platoController.listar());
+                    realizarPedidoView.setDatosPedido(salaId, mesaNumber);
+                    tabbedPane.setSelectedComponent(realizarPedidoView);
                 }
             });
 
-            // Agregar el botón al panel
-            panelBase.add(btnMesa);  
-
-            // Actualizar la posición para el siguiente botón
-            posX += anchoBoton + espacio;  // Moverse a la siguiente columna
-
-            // Si hemos llegado a la cantidad de columnas, movemos a la siguiente fila
-            if (i % columnas == 0) {
-                posX = 10;  // Resetear la posición X
-                posY += altoBoton + espacio;  // Moverse a la siguiente fila
-            }
+            panelBase.add(btnMesa);
         }
 
-        panelBase.revalidate();  // Actualizar el panel de mesas
-        panelBase.repaint();  // Redibujar el panel
+        panelBase.revalidate();
+        panelBase.repaint();
     }
-
-
-
 
     // Método para actualizar las mesas (por ejemplo, cambiar nombre o características)
     public void actualizarMesaPanel(String nombreAntiguo, String nuevoNombre) {
@@ -126,8 +107,8 @@ public class MesasView extends JPanel {
                 JButton button = (JButton) component;
                 if (button.getText().equals(nombreAntiguo)) {  // Busca la mesa con el nombre antiguo
                     button.setText(nuevoNombre);  // Actualiza el nombre de la mesa
-                    panelBase.revalidate();  // Revalidar para actualizar el diseño
-                    panelBase.repaint();  // Vuelve a pintar el panel
+                    panelBase.revalidate();  // Revalida para actualizar el diseño
+                    panelBase.repaint();       // Vuelve a pintar el panel
                     break;
                 }
             }
@@ -140,12 +121,59 @@ public class MesasView extends JPanel {
             if (component instanceof JButton) {
                 JButton button = (JButton) component;
                 if (button.getText().equals(nombreMesa)) {  // Si encontramos la mesa por su nombre
-                    panelBase.remove(button);  // Eliminar el botón de la mesa
-                    panelBase.revalidate();  // Revalidar para actualizar el diseño
-                    panelBase.repaint();  // Vuelve a pintar el panel
+                    panelBase.remove(button);  // Elimina el botón de la mesa
+                    panelBase.revalidate();    // Revalida para actualizar el diseño
+                    panelBase.repaint();       // Vuelve a pintar el panel
                     break;
                 }
             }
         }
+    }
+    
+    public void actualizarNumeroMesas(final int salaId, int nuevaCantidad) {
+        panelBase.removeAll();  // Remueve todos los botones existentes
+        int anchoBoton = 240;   // Ancho de cada botón
+        int altoBoton = 240;    // Alto de cada botón
+
+        for (int i = 1; i <= nuevaCantidad; i++) {
+            final int mesaNumber = i;
+
+            CustomButton btnMesa = new CustomButton(); 
+
+            // Cargar y ajustar la imagen
+            ImageIcon imagenMesa = new ImageIcon(getClass().getResource("/imgs/mesa.png"));
+            Image img = imagenMesa.getImage();
+            Image newImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            ImageIcon iconoEscalado = new ImageIcon(newImg);
+
+            // Configurar el botón
+            btnMesa.setIcon(iconoEscalado);
+            btnMesa.setText("Mesa " + mesaNumber);
+            btnMesa.setFont(new Font("Arial", Font.BOLD, 15));
+            btnMesa.setPreferredSize(new Dimension(anchoBoton, altoBoton));
+            btnMesa.setBackground(new Color(0, 100, 0));
+            btnMesa.setForeground(Color.WHITE);
+            btnMesa.setShadowColor(new Color(0, 0, 0, 255));
+            btnMesa.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            btnMesa.setRound(360);
+            btnMesa.setLayout(new BoxLayout(btnMesa, BoxLayout.Y_AXIS));
+            btnMesa.setHorizontalAlignment(SwingConstants.CENTER);
+            btnMesa.setIconTextGap(10);
+
+            // Al hacer clic en la mesa, se pasan los datos a RealizarPedidoView
+            btnMesa.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    realizarPedidoView.listar(platoController.listar());
+                    realizarPedidoView.setDatosPedido(salaId, mesaNumber);
+                    tabbedPane.setSelectedComponent(realizarPedidoView);
+                }
+            });
+
+            panelBase.add(btnMesa);
+        }
+        
+        panelBase.revalidate();
+        panelBase.repaint();
     }
 }

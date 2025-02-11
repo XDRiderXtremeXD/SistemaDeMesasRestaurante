@@ -15,6 +15,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import components.CustomButton;
 import components.CustomButtonEditorTable;
 import controller.PedidoController;
 import model.Pedido;
@@ -84,19 +85,22 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
                 new Object[][] {},
                 new String[] { "IdPedido", "Sala", "NumeroMesa", "Fecha", "Total", "Mozo", "Ver Detalle" }
             ) {
-            	@Override
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
     			public boolean isCellEditable(int row, int column) {
-    				return column == 6; 
+    				return column == 6;
     			}
             };
             table = new JTable(tableModel);
-            table.setRowHeight(40); 
+            table.setRowHeight(40);
     		// Rutas de los iconos
     		String rutaIconoDetalle = "/resources/detalles.png";
     		ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
     				
     		table.getColumn("Ver Detalle").setCellRenderer(new ButtonRenderer(iconoDetalle));
-    		table.getColumn("Ver Detalle").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
+    		table.getColumn("Ver Detalle").setCellEditor(new CustomButtonEditorTable(iconoDetalle,
     				e -> verDetallePedidoEstado(e))); 
             
             scrollPane.setViewportView(table);

@@ -6,7 +6,8 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-	import java.awt.event.ActionEvent;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
 	import java.awt.event.ActionListener;
 	import java.util.ArrayList;
 	import java.util.List;
@@ -18,7 +19,8 @@ import java.awt.Font;
 	import javax.swing.table.DefaultTableModel;
 	import javax.swing.table.TableModel;
 
-	import components.CustomButtonEditorTable;
+import components.CustomButton;
+import components.CustomButtonEditorTable;
 import components.CustomComboBox;
 import components.CustomTable;
 import components.CustomTextField;
@@ -56,6 +58,7 @@ import controller.PedidoController;
 			setLayout(new BorderLayout(0, 0));
 			
 			JPanel panel = new JPanel();
+			panel.setBackground(SystemColor.textHighlightText);
 			add(panel, BorderLayout.NORTH);
 			
 			scrollPane = new JScrollPane();
@@ -115,10 +118,11 @@ import controller.PedidoController;
 
 		    // Asignar el icono al botón de la columna "Ver Detalle"
 		    table_1.getColumn("Ver Detalle").setCellRenderer(new ButtonRenderer(iconoDetalle));
-		    table_1.getColumn("Ver Detalle").setCellEditor(new CustomButtonEditorTable(new JButton(), iconoDetalle,
+		    table_1.getColumn("Ver Detalle").setCellEditor(new CustomButtonEditorTable(iconoDetalle,
 		            e -> verDetallePedidoEstado(e))); // Acción para ver detalles
 		    
             scrollPane.setViewportView(table_1);
+            CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
 
 		}
 
