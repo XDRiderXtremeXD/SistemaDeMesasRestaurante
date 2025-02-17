@@ -13,7 +13,6 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JComboBox;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -32,7 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-public class HistorialPedidoView extends JPanel implements ActionListener,DocumentListener{
+public class HistorialPedidoView extends JPanel implements ActionListener, DocumentListener{
 	private static final long serialVersionUID = 1L;
 	
 	private CustomTextField txtFiltro;
@@ -47,9 +46,9 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	private JScrollPane scrollPane;
 
 	public HistorialPedidoView() {
-		pedidoController=new PedidoController();
-		tipoFiltro="Pedido";
-		textoFiltro="";
+		pedidoController = new PedidoController();
+		tipoFiltro = "Pedido";
+		textoFiltro = "";
 		setPreferredSize(new Dimension(1427, 675));
 		setLayout(new BorderLayout(0, 0));
 		

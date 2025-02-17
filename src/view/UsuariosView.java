@@ -145,7 +145,7 @@ public class UsuariosView extends JPanel {
         formularioPanel.add(lblRol);
 
         cmbRol = new CustomComboBox<>();
-        cmbRol.setModel(new DefaultComboBoxModel<>(new String[]{"Seleccione un Rol", "Administrador", "Empleado", "Cliente"}));
+        cmbRol.setModel(new DefaultComboBoxModel<>(new String[]{"Seleccione un Rol", "Mozo", "Cocinero", "Administrador"}));
         cmbRol.setFont(new Font("Arial", Font.PLAIN, 13));
         cmbRol.setBounds(55, 350, 290, 33);
         cmbRol.setSelectedIndex(0);
@@ -212,13 +212,13 @@ public class UsuariosView extends JPanel {
                     String rol = (String) tableModel.getValueAt(filaSeleccionada, 4);
                     int indexRol = 0;
                     switch (rol) {
-                        case "Administrador":
+                        case "Mozo":
                             indexRol = 1;
                             break;
-                        case "Empleado":
+                        case "Cocinero":
                             indexRol = 2;
                             break;
-                        case "Cliente":
+                        case "Administrador":
                             indexRol = 3;
                             break;
                         default:

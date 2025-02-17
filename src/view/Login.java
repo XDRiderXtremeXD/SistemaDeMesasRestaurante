@@ -169,8 +169,8 @@ public class Login extends JFrame {
     }
 
     private void iniciarSesion() {
-        String username = fieldUsername.getText();
-        String password = new String(fieldPassword.getPassword());
+        String username = fieldUsername.getText().trim();
+        String password = new String(fieldPassword.getPassword()).trim();
 
         if (username.isEmpty() || password.isEmpty()) {
             CustomAlert.showAlert("Error", "Por favor ingrese todos los campos.", "error");

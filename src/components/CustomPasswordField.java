@@ -9,6 +9,8 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
@@ -53,6 +55,15 @@ public class CustomPasswordField extends JPasswordField {
         setPreferredSize(new Dimension(350, 40));
         setEchoChar('•');
 
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (Character.isSpaceChar(e.getKeyChar())) {
+                    e.consume();
+                }
+            }
+        });
+        
         placeholderLabel = new JLabel();
         placeholderLabel.setForeground(Color.GRAY);
         placeholderLabel.setFont(new Font("Arial", Font.PLAIN, 13));
