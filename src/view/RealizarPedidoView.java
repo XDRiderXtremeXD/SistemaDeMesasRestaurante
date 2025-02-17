@@ -42,11 +42,14 @@ public class RealizarPedidoView extends JPanel {
     private PedidoController pedidoController;
     private DetallePedidoController detallePedidoController;
     private Usuario usuario;
+    private PedidosActualesView pedidosA;
 
-    public RealizarPedidoView(List<Plato> platos, Usuario usuario) {
+    public RealizarPedidoView(List<Plato> platos, Usuario usuario,PedidosActualesView pedidosA) {
     	pedidoController = new PedidoController();
     	detallePedidoController = new DetallePedidoController();
     	this.usuario = usuario;
+    	this.pedidosA = pedidosA;
+
     	
         setPreferredSize(new Dimension(1427, 675));
         setLayout(new GridBagLayout());
@@ -60,7 +63,6 @@ public class RealizarPedidoView extends JPanel {
         // Título "Comentarios"
         JLabel lblPedido = new JLabel("Realizar Pedido", SwingConstants.CENTER);
         lblPedido.setFont(new Font("Arial", Font.BOLD, 18));
-        lblPedido.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelIzquierdo.add(Box.createVerticalStrut(20));
         panelIzquierdo.add(lblPedido);
         panelIzquierdo.add(Box.createVerticalStrut(15));
@@ -574,6 +576,18 @@ public class RealizarPedidoView extends JPanel {
 			                    System.out.println("Error al crear detalle para: " + detalle.getNombreProducto());
 			                }
 			            }
+			            // 🔹 Actualizar la tabla de Pedidos Actuales
+			            if (pedidosA != null) {
+			                pedidosA.actualizarTabla();
+			                pedidosA.revalidate();
+			                pedidosA.repaint();
+			            
+
+			            } else {
+			                System.out.println("Error: pedidosA es null");
+			            }
+
+
 			        }
 			        
 			        tableModelPedidos.setRowCount(0);

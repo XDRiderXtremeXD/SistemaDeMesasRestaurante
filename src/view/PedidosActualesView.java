@@ -17,6 +17,8 @@ import java.awt.event.ActionListener;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Comparator;
+import java.util.List;
 
 public class PedidosActualesView extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -73,23 +75,38 @@ public class PedidosActualesView extends JPanel {
     }
     
     public void verDetallePedidoEstado(ActionEvent e, PedidosActualesView pedidoView) {
-        JButton sourceButton = (JButton) e.getSource();
-        int row = (int) sourceButton.getClientProperty("row");
-        int column = (int) sourceButton.getClientProperty("column");
-        JTable tabla = (JTable) sourceButton.getClientProperty("table");
-        TableModel model = tabla.getModel(); 
-        Object value = model.getValueAt(row, 0); 
-        System.out.println("Editando fila: " + row + ", columna: " + column+", valor: "+value.toString());
-        int idPedido=Integer.parseInt(value.toString());
-        Pedido pedido=pedidoController.obtenerPedido(idPedido);
-        
-        DetallePedidoView frame = new DetallePedidoView(pedido,pedidoView);
-        frame.setLocationRelativeTo(pedidoView); 
-        frame.setVisible(true); 
+    	try {
+    	    System.out.println("Método verDetallePedidoEstado ejecutado.");
+    	    
+    	    JButton sourceButton = (JButton) e.getSource();
+    	    int row = (int) sourceButton.getClientProperty("row");
+    	    int column = (int) sourceButton.getClientProperty("column");
+    	    JTable tabla = (JTable) sourceButton.getClientProperty("table");
+    	    TableModel model = tabla.getModel(); 
+    	    Object value = model.getValueAt(row, 0); 
+
+    	    int idPedido = Integer.parseInt(value.toString());
+    	    Pedido pedido = pedidoController.obtenerPedido(idPedido);
+
+    	    DetallePedidoView frame = new DetallePedidoView(pedido, pedidoView, null);
+    	    frame.setLocationRelativeTo(pedidoView);
+    	    frame.setVisible(true);
+
+    	    
+    	} catch (Exception ex) {
+    	    ex.printStackTrace();
+    	    System.out.println("Ocurrió un error: " + ex.getMessage());
+    	}
+
+
     }
 
     public void inicializarTablaDatos() {
         List<Pedido> pedidos = pedidoController.listarPedidos(pendiente, entregado, finalizado);
+        
+        // Ordenar la lista por ID en orden ascendente
+        pedidos.sort(Comparator.comparing(Pedido::getIdPedido));
+
         tableModel.setRowCount(0);
         for (Pedido pedido : pedidos) {
             tableModel.addRow(new Object[]{
@@ -123,10 +140,17 @@ public class PedidosActualesView extends JPanel {
             tableModel.setValueAt(calcularTiempoTranscurrido(fechaPedido), i, 7);
         }
     }
+    public void actualizarTabla() {
+        inicializarTablaDatos(); // Vuelve a cargar los datos
+        tableModel.fireTableDataChanged(); // Notifica que los datos han cambiado
+        revalidate();
+        repaint();
+    }
+
 
     private String calcularTiempoTranscurrido(LocalDateTime fecha) {
         Duration duracion = Duration.between(fecha, LocalDateTime.now());
-        long horas = duracion.toHours();
+        long horas = duracion.toHours() - 5;
         long minutos = duracion.toMinutes() % 60;
         long segundos = duracion.getSeconds() % 60;
         return String.format("%02d:%02d:%02d", horas, minutos, segundos);

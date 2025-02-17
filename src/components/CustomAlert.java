@@ -1,6 +1,7 @@
 package components;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -68,7 +69,7 @@ public class CustomAlert extends javax.swing.JPanel {
         GlassPanePopup.showPopup(alertPanel);
     }
 
-    public static void showConfirmationAlert(String title, String alertMessage, ActionListener acceptAction, ActionListener cancelAction) {
+    public static void showConfirmationAlert( String title, String alertMessage, ActionListener acceptAction, ActionListener cancelAction) {
         CustomAlert confirmAlertPanel = new CustomAlert();
         confirmAlertPanel.setAlertTitleText(title);
         confirmAlertPanel.setAlertMessageText(alertMessage);

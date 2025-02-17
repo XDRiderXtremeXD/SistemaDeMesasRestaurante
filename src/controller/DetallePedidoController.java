@@ -78,4 +78,10 @@ public class DetallePedidoController {
         return detallePedidos;
     }
 
+    public List<DetallePedido> obtenerDetallesPorPedido(int idPedido) {
+        // Llamar al método del DAO para obtener los detalles del pedido
+        return detallePedidoDao.listDetallePedidoById(idPedido);
+    }
+
+
 }
