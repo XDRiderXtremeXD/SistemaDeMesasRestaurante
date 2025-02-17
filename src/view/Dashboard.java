@@ -1,11 +1,10 @@
- package view;
+package view;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.prefs.Preferences;
 
 import javax.swing.*;
 
@@ -15,7 +14,6 @@ import controller.PlatoController;
 import controller.SalaController;
 import controller.UsuarioController;
 import model.Usuario;
-import raven.glasspanepopup.GlassPanePopup;
 
 public class Dashboard extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
@@ -24,24 +22,19 @@ public class Dashboard extends JFrame implements ActionListener {
     private PlatoController platoController;
     private SalaController salaController;
     private UsuarioController usuarioController;
-
+    
     private SalasView salasView;
     private MesasView mesasView;
     private Inicio inicioView;
     private CartaDelDiaView cartaDelDiaView;
-    private FinalizarPedidoView finalizarPedidoView;
     private PedidosActualesView pedidosActualesView;
     private HistorialPedidoView historialPedidoView;
     private UsuariosView usuariosView;
     private RealizarPedidoView realizarPedidoView;
-    private DetallePedidoView detallePedidoView;
 
     private CustomButton btnCartaDelDia, btnSalas, btnPedidos, btnInicio, btnUsuarios, btnHistorialPedidos, btnCerrarSesion;
     private JTabbedPane tabbedPane;
     private JPanel FooterOptions;
-    
-    
-
 
     public Dashboard(Usuario usuario) {
         this.usuario = usuario;
@@ -70,29 +63,22 @@ public class Dashboard extends JFrame implements ActionListener {
                 cerrarSesion();
             }
         });
-
-
     }
 
     private void initComponents() {
-        // Panel del header con imagen
         JPanel headerImage = new JPanel();
         headerImage.setBackground(SystemColor.textHighlightText);
         JLabel lblHeaderImage = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("imgs/fondo.png")));
         headerImage.add(lblHeaderImage);
         getContentPane().add(headerImage, BorderLayout.NORTH);
 
-        // Panel principal con BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
         
-        // Configuramos FooterOptions con BoxLayout en eje X para controlar la alineación
         FooterOptions = new JPanel();
         FooterOptions.setLayout(new BoxLayout(FooterOptions, BoxLayout.X_AXIS));
         FooterOptions.setBackground(SystemColor.textHighlightText);
-        // Agregamos el panel de footer al sur del mainPanel
         mainPanel.add(FooterOptions, BorderLayout.SOUTH);
 
-        // Panel central: pestañas
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         tabbedPane.setBackground(SystemColor.textHighlightText);
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
@@ -104,15 +90,15 @@ public class Dashboard extends JFrame implements ActionListener {
 
     private void initViews() {
         historialPedidoView = new HistorialPedidoView();
-         
-         if(usuario.getRol().equals("Mozo")) 
-            pedidosActualesView = new PedidosActualesView(true, true, false );
-         else if (usuario.getRol().equals("Cocinero")) 
-        	pedidosActualesView = new PedidosActualesView(true, false, false );
-         else if (usuario.getRol().equals("Administrador"))
-        	pedidosActualesView = new PedidosActualesView(true, true, true);
-         else 
-        	pedidosActualesView = new PedidosActualesView(false, false, false);
+        
+		if (usuario.getRol().equals("Mozo")) 
+			pedidosActualesView = new PedidosActualesView(true, true, false);
+		else if (usuario.getRol().equals("Cocinero")) 
+			pedidosActualesView = new PedidosActualesView(true, false, false);
+		else if (usuario.getRol().equals("Administrador"))
+			pedidosActualesView = new PedidosActualesView(true, true, true);
+		else 
+			pedidosActualesView = new PedidosActualesView(false, false, false);
         
         realizarPedidoView = new RealizarPedidoView(platoController.listar(), usuario, pedidosActualesView);
         mesasView = new MesasView(salaController, tabbedPane, realizarPedidoView);
@@ -120,7 +106,6 @@ public class Dashboard extends JFrame implements ActionListener {
         salasView = new SalasView(salaController, inicioView, mesasView);
         cartaDelDiaView = new CartaDelDiaView(platoController.listar());
         usuariosView = new UsuariosView(usuarioController.listar());
-        finalizarPedidoView = new FinalizarPedidoView();
 
         tabbedPane.addTab("Inicio", null, inicioView, null);
         tabbedPane.addTab("Mesas", null, mesasView, null);
@@ -129,7 +114,6 @@ public class Dashboard extends JFrame implements ActionListener {
         tabbedPane.addTab("Usuarios", null, usuariosView, null);
         tabbedPane.addTab("Pedidos Actuales", null, pedidosActualesView, null);
         tabbedPane.addTab("Historial Pedidos", null, historialPedidoView, null);
-        tabbedPane.addTab("Detalle Pedido", null, finalizarPedidoView, null);
         tabbedPane.addTab("Realizar Pedidos", null, realizarPedidoView, null);
 
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
@@ -141,15 +125,14 @@ public class Dashboard extends JFrame implements ActionListener {
     private void initButtons() {
         Dimension buttonSize = new Dimension(150, 40);
         btnInicio = createButton("Inicio", buttonSize);
-        btnPedidos = createButton("Pedidos", buttonSize);
+        btnPedidos = createButton("Pedidos Actuales", buttonSize);
         btnSalas = createButton("Salas", buttonSize);
         btnHistorialPedidos = createButton("Historial Pedidos", buttonSize);
         btnCartaDelDia = createButton("Carta del día", buttonSize);
         btnUsuarios = createButton("Usuarios", buttonSize);
         
-        // Agregamos los botones de navegación
         FooterOptions.add(btnInicio);
-        FooterOptions.add(Box.createRigidArea(new Dimension(10, 0))); // Espacio entre botones
+        FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
         FooterOptions.add(btnPedidos);
         FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
         FooterOptions.add(btnSalas);
@@ -160,10 +143,8 @@ public class Dashboard extends JFrame implements ActionListener {
         FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
         FooterOptions.add(btnUsuarios);
         
-        // Agregamos un "glue" para empujar el siguiente componente hacia la derecha
         FooterOptions.add(Box.createHorizontalGlue());
-
-        
+     
         btnCerrarSesion = new CustomButton();
         btnCerrarSesion.setText("Cerrar Sesión");
         btnCerrarSesion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -174,7 +155,6 @@ public class Dashboard extends JFrame implements ActionListener {
         btnCerrarSesion.setShadowColor(new Color(253, 83, 83));
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
         FooterOptions.add(btnCerrarSesion);
-
     }
 
     private CustomButton createButton(String text, Dimension size) {
@@ -210,8 +190,7 @@ public class Dashboard extends JFrame implements ActionListener {
             tabbedPane.setSelectedComponent(usuariosView);
         } else if (sourceButton == btnInicio) {
             tabbedPane.setSelectedComponent(inicioView);
-        } 
-        
+        }
     }
 
     private void resetButtonColors() {
@@ -227,7 +206,7 @@ public class Dashboard extends JFrame implements ActionListener {
             "Cerrar Sesión", 
             "¿Estás seguro de cerrar sesión?", 
             e -> {
-                new Login().setVisible(true); // Mostrar la pantalla de inicio de sesión
+                new Login().setVisible(true);
                 dispose(); 
             },
             e -> {
@@ -235,8 +214,4 @@ public class Dashboard extends JFrame implements ActionListener {
             }
         );
     }
-
-
-
-
 }

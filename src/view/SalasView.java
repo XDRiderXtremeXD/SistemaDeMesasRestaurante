@@ -15,8 +15,8 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class SalasView extends JPanel implements ActionListener {
-
     private static final long serialVersionUID = 1L;
+    
     private Inicio inicioView;
     private MesasView mesasView;
     private SalaController controlador;
@@ -61,6 +61,7 @@ public class SalasView extends JPanel implements ActionListener {
                 if (fila != -1) {
                     txtNombre.setText(modelo.getValueAt(fila, 1).toString());
                     txtMesas.setText(modelo.getValueAt(fila, 2).toString());
+                    btnAgregar.setEnabled(false);
                     btnActualizar.setEnabled(true);
                     btnEliminar.setEnabled(true);
                 }
@@ -196,6 +197,7 @@ public class SalasView extends JPanel implements ActionListener {
                     limpiarDatos();
                     
                     CustomAlert.showAlert("Éxito", "Sala actualizada correctamente", "success");
+                    btnAgregar.setEnabled(true);
                 } catch (NumberFormatException ex) {
                 	CustomAlert.showAlert("Error", "Ingrese un número válido en Mesas", "error");
                 }
@@ -216,6 +218,7 @@ public class SalasView extends JPanel implements ActionListener {
             	            limpiarDatos();
         					GlassPanePopup.closePopupLast();
         					CustomAlert.showAlert("Éxito", "Sala eliminada correctamente", "success");
+        					btnAgregar.setEnabled(true);
         			    },
         			    evt -> {
         			        // Acción al presionar "Cancelar"
@@ -225,18 +228,9 @@ public class SalasView extends JPanel implements ActionListener {
             }
         }
     }
-
-    //OTROS MÉTODOS
-    // Método para mostrar una sala específica
-       public static void mostrarSala(Sala sala) {
-           System.out.println("Detalles de la Sala:");
-           System.out.println("ID: " + sala.getIdSala());
-           System.out.println("Nombre: " + sala.getNombre());
-           System.out.println("Mesas: " + sala.getMesas());
-       }
-       
-       public void limpiarDatos() {
-       	txtNombre.setText("");
-           txtMesas.setText("");
-       }
+    
+	public void limpiarDatos() {
+		txtNombre.setText("");
+		txtMesas.setText("");
+	}
 }

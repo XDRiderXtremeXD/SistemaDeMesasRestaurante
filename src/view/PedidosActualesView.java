@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import components.CustomButton;
 import components.CustomButtonEditorTable;
 import components.CustomTable;
 import controller.PedidoController;
@@ -18,10 +17,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Comparator;
-import java.util.List;
 
 public class PedidosActualesView extends JPanel {
     private static final long serialVersionUID = 1L;
+    
     private JTable table;
     private DefaultTableModel tableModel;
     private PedidoController pedidoController;
@@ -62,25 +61,20 @@ public class PedidosActualesView extends JPanel {
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
         add(scrollPane, BorderLayout.CENTER);
         
-            String rutaIconoDetalle = "/imgs/detalles.png";
-    		ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
-    				
-    		table.getColumn("Ver/Estado").setCellRenderer(new ButtonRenderer(iconoDetalle));
-    		table.getColumn("Ver/Estado").setCellEditor(new CustomButtonEditorTable(iconoDetalle,
-    				e -> verDetallePedidoEstado(e, this))); 
-            
+        String rutaIconoDetalle = "/imgs/detalles.png";
+		ImageIcon iconoDetalle = new ImageIcon(getClass().getResource(rutaIconoDetalle));
+				
+		table.getColumn("Ver/Estado").setCellRenderer(new ButtonRenderer(iconoDetalle));
+		table.getColumn("Ver/Estado").setCellEditor(new CustomButtonEditorTable(iconoDetalle,
+				e -> verDetallePedidoEstado(e, this)));
         
         scrollPane.setViewportView(table);
-
     }
     
     public void verDetallePedidoEstado(ActionEvent e, PedidosActualesView pedidoView) {
-    	try {
-    	    System.out.println("Método verDetallePedidoEstado ejecutado.");
-    	    
+    	try {    	    
     	    JButton sourceButton = (JButton) e.getSource();
     	    int row = (int) sourceButton.getClientProperty("row");
-    	    int column = (int) sourceButton.getClientProperty("column");
     	    JTable tabla = (JTable) sourceButton.getClientProperty("table");
     	    TableModel model = tabla.getModel(); 
     	    Object value = model.getValueAt(row, 0); 
@@ -88,7 +82,7 @@ public class PedidosActualesView extends JPanel {
     	    int idPedido = Integer.parseInt(value.toString());
     	    Pedido pedido = pedidoController.obtenerPedido(idPedido);
 
-    	    DetallePedidoView frame = new DetallePedidoView(pedido, pedidoView, null);
+    	    DetallePedidoView frame = new DetallePedidoView(pedido, pedidoView);
     	    frame.setLocationRelativeTo(pedidoView);
     	    frame.setVisible(true);
 
@@ -97,14 +91,11 @@ public class PedidosActualesView extends JPanel {
     	    ex.printStackTrace();
     	    System.out.println("Ocurrió un error: " + ex.getMessage());
     	}
-
-
     }
 
     public void inicializarTablaDatos() {
         List<Pedido> pedidos = pedidoController.listarPedidos(pendiente, entregado, finalizado);
         
-        // Ordenar la lista por ID en orden ascendente
         pedidos.sort(Comparator.comparing(Pedido::getIdPedido));
 
         tableModel.setRowCount(0);
@@ -141,12 +132,11 @@ public class PedidosActualesView extends JPanel {
         }
     }
     public void actualizarTabla() {
-        inicializarTablaDatos(); // Vuelve a cargar los datos
-        tableModel.fireTableDataChanged(); // Notifica que los datos han cambiado
+        inicializarTablaDatos();
+        tableModel.fireTableDataChanged();
         revalidate();
         repaint();
     }
-
 
     private String calcularTiempoTranscurrido(LocalDateTime fecha) {
         Duration duracion = Duration.between(fecha, LocalDateTime.now());

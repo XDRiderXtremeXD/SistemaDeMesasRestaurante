@@ -25,7 +25,6 @@ public class DetallePedidoController {
     public DetallePedido obtenerDetallePedido(int idDetallePedido) {
         for (DetallePedido detalle : listDetallePedidos) {
             if (detalle.getIdDetallePedido() == idDetallePedido) {
-                System.out.println("Detalle de Pedido encontrado: " + detalle.getIdDetallePedido());
                 return detalle;
             }
         }
@@ -52,7 +51,6 @@ public class DetallePedidoController {
                     break;
                 }
             }
-            System.out.println("Detalle de Pedido actualizado con ID: " + detalle.getIdDetallePedido());
         } else {
             System.out.println("Error al actualizar detalle de pedido.");
         }
@@ -62,7 +60,6 @@ public class DetallePedidoController {
         boolean eliminado = detallePedidoDao.deleteDetallePedido(idDetallePedido);
         if (eliminado) {
             listDetallePedidos.removeIf(detalle -> detalle.getIdDetallePedido() == idDetallePedido);
-            System.out.println("Detalle de Pedido con ID: " + idDetallePedido + " eliminado correctamente.");
         } else {
             System.out.println("No se pudo eliminar el detalle de pedido con ID: " + idDetallePedido);
         }
@@ -72,16 +69,11 @@ public class DetallePedidoController {
         List<DetallePedido> detallePedidos = detallePedidoDao.listDetallePedidoById(idPedido);
         if (detallePedidos.isEmpty()) {
             System.out.println("No se encontraron detalles de pedido para el ID: " + idPedido);
-        } else {
-            System.out.println("Detalles de pedido encontrados para el ID: " + idPedido);
         }
         return detallePedidos;
     }
 
     public List<DetallePedido> obtenerDetallesPorPedido(int idPedido) {
-        // Llamar al método del DAO para obtener los detalles del pedido
         return detallePedidoDao.listDetallePedidoById(idPedido);
     }
-
-
 }

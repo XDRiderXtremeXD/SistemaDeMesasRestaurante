@@ -86,13 +86,14 @@ public class CustomComboBox<E> extends JComboBox<E> {
             return new ArrowButton();
         }
         
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         protected ComboPopup createPopup() {
             return new ComboSuggestionPopup(comboBox);
         }
         
         @Override
-        protected ListCellRenderer createRenderer() {
+        protected ListCellRenderer<Object> createRenderer() {
             return new ListCellRenderer<Object>() {
                 @Override
                 public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

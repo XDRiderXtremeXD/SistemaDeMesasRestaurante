@@ -1,7 +1,5 @@
-/components/
-/controller/
-/dao/
-/imgs/
-/model/
 /utils/
 /view/
+/controller/
+/components/
+/dao/
