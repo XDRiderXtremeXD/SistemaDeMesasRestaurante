@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 import java.awt.BorderLayout;
@@ -12,8 +13,11 @@ import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
-import javax.swing.JComboBox;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -32,6 +36,10 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+
+//Define el formato de fecha que deseas
+
+
 public class HistorialPedidoView extends JPanel implements ActionListener,DocumentListener{
 	private static final long serialVersionUID = 1L;
 	
@@ -45,6 +53,8 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	private JLabel lblTBuscador;
 	private JTable table_1;
 	private JScrollPane scrollPane;
+	private List<Pedido> pedidos;
+	private DateTimeFormatter formatter;
 
 	public HistorialPedidoView() {
 		pedidoController=new PedidoController();
@@ -52,6 +62,7 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 		textoFiltro="";
 		setPreferredSize(new Dimension(1427, 675));
 		setLayout(new BorderLayout(0, 0));
+		formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(SystemColor.textHighlightText);
@@ -86,7 +97,7 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 		txtFiltro.getDocument().addDocumentListener(this);
 		
 		CreacionTabla();
-		ReiniciarTablaConFiltros();
+		CargarPedidosEnTabla();
 	}
 
 	public void CreacionTabla() {
@@ -133,7 +144,7 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	
 	private void LogicaCambioTextoFiltro() {
 		textoFiltro=txtFiltro.getText();
-		ReiniciarTablaConFiltros();
+		EfectuarFiltroEnTabla();
 	}
 	
 	private void LogicaCambioTipoFiltro() {
@@ -146,47 +157,63 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 		else if(tipoFiltro.contentEquals("Sala"))
 			lblBuscador.setText("Sala:");
 		
-		ReiniciarTablaConFiltros();
+		EfectuarFiltroEnTabla();
 	}
-
-	public void ReiniciarTablaConFiltros() {
-	    List<Pedido> pedidos = new ArrayList<Pedido>();
+	
+	public void EfectuarFiltroEnTabla() {
+		List<Pedido> pedidosMuestra = new ArrayList<Pedido>();
 	    
-	    if (textoFiltro.isEmpty()) {
-	        pedidos = pedidoController.listarPedidos(false, false, true);
-	    } else if (tipoFiltro.contentEquals("Pedido")) {
-	        Pedido pedidoID = pedidoController.obtenerPedido(Integer.parseInt(textoFiltro));
-	        if(pedidoID!=null)
-	        	pedidos.add(pedidoID);
-	    } else if (tipoFiltro.contentEquals("Mozo")) {
-	        pedidos = pedidoController.listarPedidosPorMozo(textoFiltro);
-	    } else if (tipoFiltro.contentEquals("Sala")) {
-	        pedidos = pedidoController.listarPedidosPorSala(textoFiltro);
-	    }
+	    if (textoFiltro.isEmpty())
+	    	pedidosMuestra=pedidos;
+	     else if (tipoFiltro.contentEquals("Pedido"))
+	    	pedidosMuestra = FiltrarPedidosPorID(textoFiltro);
+	     else if (tipoFiltro.contentEquals("Mozo")) 
+	    	pedidosMuestra = FiltrarPedidosPorMozo(textoFiltro);
+	     else if (tipoFiltro.contentEquals("Sala")) 
+	    	pedidosMuestra = FiltrarPedidosPorSala(textoFiltro);
 	    
-	    pedidos.sort(Comparator.comparing(Pedido::getIdPedido));
+	    
+	    pedidosMuestra.sort(Comparator.comparing(Pedido::getIdPedido));
 
 	    tableModel.setRowCount(0);
 	    
-	    for (Pedido pedido : pedidos) {
+	    for (Pedido pedido : pedidosMuestra) {
+	    	
 	        tableModel.addRow(new Object[] {
 	            pedido.getIdPedido(),
 	            pedido.getNombreSala(),
 	            pedido.getNumeroMesa(),
-	            pedido.getFecha(),
+	            pedido.getFecha().format(formatter),
 	            pedido.getTotal(),
 	            pedido.getUsuario(),
 	            "Ver Detalle"
 	        });
 	    }
 	}
-		
-    public void actualizarTabla() {
-		ReiniciarTablaConFiltros();
-		tableModel.fireTableDataChanged();
-		revalidate();
-		repaint();
+
+	public void CargarPedidosEnTabla() {
+	    pedidos = new ArrayList<Pedido>();
+	    pedidos = pedidoController.listarPedidos(false, false, true);
+	    EfectuarFiltroEnTabla();
 	}
+	
+	 public  List<Pedido>  FiltrarPedidosPorMozo(String mozo) {
+	        return pedidos.stream()
+	                          .filter(pedido -> pedido.getUsuario().toLowerCase().contains(mozo.toLowerCase()))
+	                          .collect(Collectors.toList());
+	    }
+
+	    public  List<Pedido>  FiltrarPedidosPorSala(String nombreSala) {
+	        return pedidos.stream()
+	                          .filter(pedido -> pedido.getNombreSala().toLowerCase().contains(nombreSala.toLowerCase()))
+	                          .collect(Collectors.toList());
+	    }
+	    
+	    public  List<Pedido>  FiltrarPedidosPorID(String ID) {
+	        return pedidos.stream()
+	                          .filter(pedido -> String.valueOf(pedido.getIdPedido()).contains(ID))
+	                          .collect(Collectors.toList());
+	    }
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
