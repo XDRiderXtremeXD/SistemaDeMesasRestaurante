@@ -31,6 +31,7 @@ import java.text.DecimalFormat;
 
 public class RealizarPedidoView extends JPanel {
     private static final long serialVersionUID = 1L;
+    
     private JTable tablaPedidos, tablaPlatos;
     private DefaultTableModel tableModelPedidos, tableModelPlatos;
     private CustomTextField txtComentario, txtBuscar;
@@ -44,12 +45,11 @@ public class RealizarPedidoView extends JPanel {
     private Usuario usuario;
     private PedidosActualesView pedidosA;
 
-    public RealizarPedidoView(List<Plato> platos, Usuario usuario,PedidosActualesView pedidosA) {
+    public RealizarPedidoView(List<Plato> platos, Usuario usuario, PedidosActualesView pedidosA) {
     	pedidoController = new PedidoController();
     	detallePedidoController = new DetallePedidoController();
     	this.usuario = usuario;
     	this.pedidosA = pedidosA;
-
     	
         setPreferredSize(new Dimension(1427, 675));
         setLayout(new GridBagLayout());
@@ -63,6 +63,7 @@ public class RealizarPedidoView extends JPanel {
         // Título "Comentarios"
         JLabel lblPedido = new JLabel("Realizar Pedido", SwingConstants.CENTER);
         lblPedido.setFont(new Font("Arial", Font.BOLD, 18));
+        lblPedido.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelIzquierdo.add(Box.createVerticalStrut(20));
         panelIzquierdo.add(lblPedido);
         panelIzquierdo.add(Box.createVerticalStrut(15));
@@ -529,7 +530,6 @@ public class RealizarPedidoView extends JPanel {
     }
     
     public void setDatosPedido(int salaId, int numeroMesa) {
-    	System.out.println("Id Sala: " + salaId + " " + "Num mesa: " + numeroMesa);
         this.salaId = salaId;
         this.numeroMesa = numeroMesa;
     }
@@ -608,5 +608,4 @@ public class RealizarPedidoView extends JPanel {
 			    }
         );
     }
-
 }

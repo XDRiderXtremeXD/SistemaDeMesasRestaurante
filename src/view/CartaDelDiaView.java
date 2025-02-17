@@ -18,8 +18,8 @@ import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 
 public class CartaDelDiaView extends JPanel {
-
     private static final long serialVersionUID = 1L;
+    
     private JTable tablaProductos;
     private DefaultTableModel tableModel;
     private CustomButton btnAgregar;
@@ -79,21 +79,19 @@ public class CartaDelDiaView extends JPanel {
         searchPanel.add(txtBuscar);
         tablaPanel.add(searchPanel, BorderLayout.NORTH);
         
-        // ScrollPane con la tabla
         JScrollPane scrollPane = new JScrollPane(tablaProductos);
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
         tablaPanel.add(scrollPane, BorderLayout.CENTER);
 
         listar(platos);
         
-        // Panel de formulario (sin cambios)
         formularioPanel = new JPanel();
         formularioPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(211, 211, 211)));
         formularioPanel.setBackground(SystemColor.textHighlightText);
         formularioPanel.setLayout(null);
         formularioPanel.setPreferredSize(new Dimension(400, 0));
 
-        JLabel lblTitulo = new JLabel("Agregar Carta del Día");
+        JLabel lblTitulo = new JLabel("Gestión de Carta del Día");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
         lblTitulo.setBounds(50, 30, 300, 30);
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -374,5 +372,4 @@ public class CartaDelDiaView extends JPanel {
         
         formularioPanel.requestFocus();
     }
-
 }

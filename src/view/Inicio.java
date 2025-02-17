@@ -12,6 +12,7 @@ import java.util.List;
 
 public class Inicio extends JPanel {
     private static final long serialVersionUID = 1L;
+    
     private JPanel panelBase;  
     private SalaController controlador;
     private MesasView mesasView;
@@ -63,7 +64,6 @@ public class Inicio extends JPanel {
         salaButton.setBackground(Color.BLACK);
         salaButton.setForeground(Color.WHITE);
         salaButton.setShadowColor(new Color(169, 169, 169, 255));
-        salaButton.setShadowBlurRadius(10);
         salaButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         salaButton.setRound(30);
         salaButton.setLayout(new BoxLayout(salaButton, BoxLayout.Y_AXIS));

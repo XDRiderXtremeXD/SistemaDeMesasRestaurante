@@ -15,7 +15,6 @@ import model.Pedido;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +30,6 @@ public class GenerarPdf {
     }
 
     public void generarPDF(int idPedido) {
-        System.out.println("Generando PDF para el pedido con ID: " + idPedido);
 
         if (idPedido <= 0) {
             System.err.println("ID de pedido no válido.");
@@ -64,10 +62,8 @@ public class GenerarPdf {
             PdfDocument pdf = new PdfDocument(writer);
             Document documento = new Document(pdf);
 
-         // Crear tabla con 2 columnas: Logo y Nombre del Restaurante
             Table headerTable = new Table(2).useAllAvailableWidth();
 
-            // Cargar imagen del logo
             try (InputStream is = getClass().getResourceAsStream("/imgs/LogoIcon.png")) {
                 if (is != null) {
                     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -78,9 +74,8 @@ public class GenerarPdf {
                     }
                     byte[] imageBytes = buffer.toByteArray();
                     ImageData imageData = ImageDataFactory.create(imageBytes);
-                    Image logo = new Image(imageData).setWidth(30).setHeight(30); // Ajustar tamaño
+                    Image logo = new Image(imageData).setWidth(30).setHeight(30);
 
-                    // Celda del logo
                     Cell logoCell = new Cell().add(logo)
                             .setBorder(null)
                             .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
@@ -89,7 +84,6 @@ public class GenerarPdf {
                 }
             }
 
-            // Celda del título "Restaurante"
             Cell titleCell = new Cell().add(new Paragraph("Restaurante")
                     .setBold()
                     .setFontSize(20))
@@ -99,35 +93,28 @@ public class GenerarPdf {
 
             headerTable.addCell(titleCell);
 
-            // Agregar la tabla al documento
             documento.add(headerTable);
 
-            // Frase célebre centrada
             documento.add(new Paragraph("\"La mejor comida es la que se comparte\"")
                     .setTextAlignment(TextAlignment.CENTER)
                     .setItalic()
                     .setMarginBottom(10));
             documento.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
             
-            // Información del pedido
             documento.add(new Paragraph("Sala: " + pedido.getNombreSala()));
             documento.add(new Paragraph("Usuario: " + pedido.getUsuario()));
             documento.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
             documento.add(new Paragraph("Fecha: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date())));
             documento.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
             
-            // Listado de productos sin formato de tabla
-         // Crear tabla con 4 columnas (Producto, Cantidad, Precio, Subtotal)
             Table table = new Table(5).useAllAvailableWidth();
 
-            // Encabezados
             table.addHeaderCell(new Cell().add(new Paragraph("Producto").setBold()));
             table.addHeaderCell(new Cell().add(new Paragraph("Cantidad").setBold()));
             table.addHeaderCell(new Cell().add(new Paragraph("Precio (S/.)").setBold()));
             table.addHeaderCell(new Cell().add(new Paragraph("Comentario").setBold()));
             table.addHeaderCell(new Cell().add(new Paragraph("Subtotal (S/.)").setBold()));
 
-            // Agregar filas con los detalles de cada producto
             for (DetallePedido detalle : listaDetalles) {
                 table.addCell(new Cell().add(new Paragraph(detalle.getNombreProducto())));
                 table.addCell(new Cell().add(new Paragraph(String.valueOf(detalle.getCantidad()))));
@@ -136,12 +123,10 @@ public class GenerarPdf {
                 table.addCell(new Cell().add(new Paragraph(String.format("%.2f", detalle.getSubTotal()))));
             }
 
-            // Agregar tabla al documento
             documento.add(table);
 
             documento.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
             
-            // Total
             documento.add(new Paragraph("Total General: S/. " + pedido.getTotal())
                     .setBold()
                     .setTextAlignment(TextAlignment.RIGHT));

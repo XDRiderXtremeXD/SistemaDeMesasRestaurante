@@ -1,6 +1,5 @@
 package view;
 
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -32,7 +31,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class DetallePedidoView extends JFrame implements ActionListener {
-
     private static final long serialVersionUID = 1L;
 
     private JPanel contentPane;
@@ -45,15 +43,8 @@ public class DetallePedidoView extends JFrame implements ActionListener {
     private JLabel lblEstado_1;
     private Pedido pedido;
     private CustomButton btnPdf;
-    private HistorialPedidoView historial;
-    /**
-     * Launch the application.
-     */
-  
-    /**
-     * Create the frame.
-     */
-    public DetallePedidoView(Pedido pedido, PedidosActualesView pedidoView,HistorialPedidoView historial) {
+
+    public DetallePedidoView(Pedido pedido, PedidosActualesView pedidoView) {
     	setResizable(false);
     	setTitle("Detalle del Pedido");
         setIconImage(new ImageIcon(getClass().getResource("/imgs/LogoIcon.png")).getImage());
@@ -63,7 +54,6 @@ public class DetallePedidoView extends JFrame implements ActionListener {
         this.detallesPedido = detallePedidoController.listarDetallePedidosPorPedido(pedido.getIdPedido());
         this.pedidoView = pedidoView;
         this.pedido = pedido;
-        this.historial = historial;
         
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 940, 620);
@@ -101,7 +91,6 @@ public class DetallePedidoView extends JFrame implements ActionListener {
         btnPdf.setBackground(new Color(0, 123, 255));
         btnPdf.setBounds(309, 540, 143, 40);
         contentPane.add(btnPdf);
-        
     }
     
     private void ViewEstado() {
@@ -151,37 +140,25 @@ public class DetallePedidoView extends JFrame implements ActionListener {
             pedidoController.actualizarPedido(pedido);
             pedidoView.inicializarTablaDatos();
             this.dispose();
-            
-            if (historial != null) {
-                historial.actualizarTabla();
-                historial.revalidate();
-                historial.repaint();
-            
-
-            } else {
-                System.out.println("Error: pedidosA es null");
-            }
-          
         });
     }
     
     private void InicializarDatos() {
         double totalPedido = 0.0;
         model.setRowCount(0);
-        // Agregar cada detalle del pedido a la tabla y acumular el total
+        
         for (DetallePedido detalle : detallesPedido) {
             model.addRow(new Object[]{
-                detalle.getIdPedido(),            // ID Pedido
-                detalle.getNombreProducto(),      // Nombre Producto
-                detalle.getPrecio(),              // Precio
-                detalle.getCantidad(),            // Cantidad
-                detalle.getComentario(),          // Comentario
-                detalle.getSubTotal()             // SubTotal
+                detalle.getIdPedido(),
+                detalle.getNombreProducto(),
+                detalle.getPrecio(),
+                detalle.getCantidad(),
+                detalle.getComentario(),
+                detalle.getSubTotal()
             });
             totalPedido += detalle.getSubTotal();
         }
     
-        // Mostrar el total en un JLabel
         JLabel lblTotal = new JLabel("Total: S/. " + String.format("%.2f", totalPedido));
         lblTotal.setFont(new Font("Tahoma", Font.PLAIN, 16));
         lblTotal.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -200,6 +177,7 @@ public class DetallePedidoView extends JFrame implements ActionListener {
         table.setModel(model);
         scrollPane.setViewportView(table);
     }
+    
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnPdf) {
 			actionPerformedBtnPdf(e);
@@ -214,5 +192,4 @@ public class DetallePedidoView extends JFrame implements ActionListener {
 	    GenerarPdf pdfPrueba = new GenerarPdf(pedidoController, detallePController );
 	    pdfPrueba.generarPDF(idPedido);
 	}
-
 }

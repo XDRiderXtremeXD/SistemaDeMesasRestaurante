@@ -29,7 +29,6 @@ public class PedidoController {
     public Pedido obtenerPedido(int idPedido) {
         for (Pedido pedido : listPedidos) {
             if (pedido.getIdPedido() == idPedido) {
-                System.out.println("Pedido encontrado: " + pedido.getIdPedido());
                 return pedido;
             }
         }
@@ -62,7 +61,6 @@ public class PedidoController {
                     break;
                 }
             }
-            System.out.println("Pedido actualizado con ID: " + pedido.getIdPedido());
         } else {
             System.out.println("Error al actualizar pedido.");
         }
@@ -72,7 +70,6 @@ public class PedidoController {
         boolean eliminado = pedidoDao.deletePedido(idPedido);
         if (eliminado) {
             listPedidos.removeIf(p -> p.getIdPedido() == idPedido);
-            System.out.println("Pedido con ID: " + idPedido + " eliminado correctamente.");
         } else {
             System.out.println("No se pudo eliminar el pedido con ID: " + idPedido);
         }

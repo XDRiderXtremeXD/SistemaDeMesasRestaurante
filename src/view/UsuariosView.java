@@ -103,7 +103,7 @@ public class UsuariosView extends JPanel {
         formularioPanel.setLayout(null);
         formularioPanel.setPreferredSize(new Dimension(400, 0));
 
-        JLabel lblTitulo = new JLabel("Mantenimiento Usuarios");
+        JLabel lblTitulo = new JLabel("Gestión de Usuarios");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
         lblTitulo.setBounds(50, 30, 300, 30);
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -452,5 +452,4 @@ public class UsuariosView extends JPanel {
         isEditing = false;
         editingRowIndex = -1;
     }
-
 }

@@ -129,15 +129,4 @@ public class SalaDaoImpl implements ISalaDao {
         }
         return false;
     }
-
-    // Método auxiliar para cerrar los recursos
-    private void closeResources(Connection cn, PreparedStatement psm, ResultSet rs) {
-        try {
-            if (rs != null) rs.close();
-            if (psm != null) psm.close();
-            if (cn != null) cn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }
