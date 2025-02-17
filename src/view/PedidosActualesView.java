@@ -13,8 +13,12 @@ import utils.TiempoRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Comparator;
 
@@ -28,18 +32,20 @@ public class PedidosActualesView extends JPanel {
     private boolean pendiente;
     private boolean entregado;
     private boolean finalizado;
+    private DateTimeFormatter formatter;
 
     public PedidosActualesView(boolean pendiente, boolean entregado, boolean finalizado) {
         this.pendiente = pendiente;
         this.entregado = entregado;
         this.finalizado = finalizado;
         pedidoController = new PedidoController();
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         setPreferredSize(new Dimension(1427, 675));
         setLayout(new BorderLayout());
 
         creacionTabla();
-        inicializarTablaDatos();
+        CargarPedidosEnTabla();
         startTimer();
     }
 
@@ -93,18 +99,18 @@ public class PedidosActualesView extends JPanel {
     	}
     }
 
-    public void inicializarTablaDatos() {
+    public void CargarPedidosEnTabla() {
         List<Pedido> pedidos = pedidoController.listarPedidos(pendiente, entregado, finalizado);
         
         pedidos.sort(Comparator.comparing(Pedido::getIdPedido));
 
         tableModel.setRowCount(0);
         for (Pedido pedido : pedidos) {
-            tableModel.addRow(new Object[]{
+            	tableModel.addRow(new Object[]{
                 pedido.getIdPedido(),
                 pedido.getNombreSala(),
                 pedido.getNumeroMesa(),
-                pedido.getFecha(),
+                pedido.getFecha().format(formatter),
                 pedido.getTotal(),
                 pedido.getEstado(),
                 pedido.getUsuario(),
@@ -127,12 +133,12 @@ public class PedidosActualesView extends JPanel {
 
     private void updateTimes() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
-            LocalDateTime fechaPedido = (LocalDateTime) tableModel.getValueAt(i, 3);
+        	LocalDateTime fechaPedido = LocalDateTime.parse(tableModel.getValueAt(i, 3).toString(), formatter);
             tableModel.setValueAt(calcularTiempoTranscurrido(fechaPedido), i, 7);
         }
     }
     public void actualizarTabla() {
-        inicializarTablaDatos();
+    	CargarPedidosEnTabla();
         tableModel.fireTableDataChanged();
         revalidate();
         repaint();
