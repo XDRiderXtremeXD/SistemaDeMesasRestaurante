@@ -38,7 +38,7 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	private CustomTextField txtFiltro;
 	private DefaultTableModel tableModel;
 	private PedidoController pedidoController;
-	private JComboBox<String> comboBox;
+	private CustomComboBox<String> comboBox;
 	private String tipoFiltro;
 	private String textoFiltro;
 	private JLabel lblBuscador;
@@ -65,12 +65,13 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 		lblTBuscador.setBounds(10, 11, 158, 29);
 		panel.add(lblTBuscador);
 		
-		CustomComboBox<String> comboBox = new CustomComboBox<>();
+		comboBox = new CustomComboBox<>();
 		comboBox.addItem("Pedido");
 		comboBox.addItem("Sala");
 		comboBox.addItem("Mozo");
 		comboBox.setBounds(178, 12, 189, 29);
 		panel.add(comboBox);
+		comboBox.addActionListener(this);
 		
 		lblBuscador = new JLabel("ID Pedido:");
 		lblBuscador.setFont(new Font("Arial", Font.BOLD, 14));
@@ -82,6 +83,7 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
         txtFiltro.setPlaceholder("Buscador");
         panel.add(txtFiltro);
 		txtFiltro.setColumns(10);
+		txtFiltro.getDocument().addDocumentListener(this);
 		
 		CreacionTabla();
 		ReiniciarTablaConFiltros();
@@ -154,7 +156,8 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	        pedidos = pedidoController.listarPedidos(false, false, true);
 	    } else if (tipoFiltro.contentEquals("Pedido")) {
 	        Pedido pedidoID = pedidoController.obtenerPedido(Integer.parseInt(textoFiltro));
-	        pedidos.add(pedidoID);
+	        if(pedidoID!=null)
+	        	pedidos.add(pedidoID);
 	    } else if (tipoFiltro.contentEquals("Mozo")) {
 	        pedidos = pedidoController.listarPedidosPorMozo(textoFiltro);
 	    } else if (tipoFiltro.contentEquals("Sala")) {
@@ -164,6 +167,7 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	    pedidos.sort(Comparator.comparing(Pedido::getIdPedido));
 
 	    tableModel.setRowCount(0);
+	    
 	    for (Pedido pedido : pedidos) {
 	        tableModel.addRow(new Object[] {
 	            pedido.getIdPedido(),
@@ -186,9 +190,9 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getSource() == comboBox) {
+		 System.out.println(arg0.getSource());
+		if (arg0.getSource() == comboBox) 
 		 LogicaCambioTipoFiltro();
-		}
 	}
 
 	@Override
