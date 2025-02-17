@@ -1,6 +1,6 @@
 package view;
 
-import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -13,6 +13,7 @@ import javax.swing.SwingConstants;
 
 import model.DetallePedido;
 import model.Pedido;
+import utils.GenerarPdf;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -26,11 +27,14 @@ import controller.PedidoController;
 import java.awt.Color;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 
-public class DetallePedidoView extends JFrame {
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class DetallePedidoView extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 1L;
+
     private JPanel contentPane;
     private List<DetallePedido> detallesPedido;
     private PedidosActualesView pedidoView;
@@ -40,28 +44,16 @@ public class DetallePedidoView extends JFrame {
     private JLabel lblEstado;
     private JLabel lblEstado_1;
     private Pedido pedido;
-    
+    private CustomButton btnPdf;
+    private HistorialPedidoView historial;
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    Pedido pedido = new Pedido();
-                    DetallePedidoView frame = new DetallePedidoView(pedido, null);
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-    
+  
     /**
      * Create the frame.
      */
-    public DetallePedidoView(Pedido pedido, PedidosActualesView pedidoView) {
+    public DetallePedidoView(Pedido pedido, PedidosActualesView pedidoView,HistorialPedidoView historial) {
     	setResizable(false);
     	setTitle("Detalle del Pedido");
         setIconImage(new ImageIcon(getClass().getResource("/imgs/LogoIcon.png")).getImage());
@@ -71,6 +63,7 @@ public class DetallePedidoView extends JFrame {
         this.detallesPedido = detallePedidoController.listarDetallePedidosPorPedido(pedido.getIdPedido());
         this.pedidoView = pedidoView;
         this.pedido = pedido;
+        this.historial = historial;
         
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 940, 620);
@@ -98,6 +91,17 @@ public class DetallePedidoView extends JFrame {
         ViewCambiarEstado();
         
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
+        
+        btnPdf = new CustomButton();
+        btnPdf.addActionListener(this);
+        btnPdf.setText("PDF");
+        btnPdf.setShadowColor(new Color(0, 123, 255));
+        btnPdf.setRippleColor(Color.WHITE);
+        btnPdf.setForeground(new Color(245, 245, 245));
+        btnPdf.setBackground(new Color(0, 123, 255));
+        btnPdf.setBounds(309, 540, 143, 40);
+        contentPane.add(btnPdf);
+        
     }
     
     private void ViewEstado() {
@@ -147,6 +151,17 @@ public class DetallePedidoView extends JFrame {
             pedidoController.actualizarPedido(pedido);
             pedidoView.inicializarTablaDatos();
             this.dispose();
+            
+            if (historial != null) {
+                historial.actualizarTabla();
+                historial.revalidate();
+                historial.repaint();
+            
+
+            } else {
+                System.out.println("Error: pedidosA es null");
+            }
+          
         });
     }
     
@@ -185,4 +200,19 @@ public class DetallePedidoView extends JFrame {
         table.setModel(model);
         scrollPane.setViewportView(table);
     }
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnPdf) {
+			actionPerformedBtnPdf(e);
+		}
+	}
+	
+	protected void actionPerformedBtnPdf(ActionEvent e) {
+		int idPedido = pedido.getIdPedido();
+		
+		PedidoController pedidoController = new PedidoController();
+		DetallePedidoController detallePController = new DetallePedidoController();
+	    GenerarPdf pdfPrueba = new GenerarPdf(pedidoController, detallePController );
+	    pdfPrueba.generarPDF(idPedido);
+	}
+
 }

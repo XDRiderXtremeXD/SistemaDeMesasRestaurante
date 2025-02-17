@@ -1,7 +1,7 @@
 /components/
-/model/
-/view/
-/utils/
-/imgs/
 /controller/
 /dao/
+/imgs/
+/model/
+/utils/
+/view/

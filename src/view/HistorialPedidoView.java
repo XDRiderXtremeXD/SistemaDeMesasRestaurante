@@ -2,6 +2,9 @@ package view;
 
 	import javax.swing.JPanel;
 	import javax.swing.JLabel;
+	import java.util.Comparator;
+	import java.util.List;
+	import java.util.ArrayList;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -137,7 +140,7 @@ import controller.PedidoController;
 	        System.out.println("Editando fila: " + row + ", columna: " + column+", valor: "+value.toString());
 	        int idPedido=Integer.parseInt(value.toString());
 	        Pedido pedido=pedidoController.obtenerPedido(idPedido);
-	        DetallePedidoView frame = new DetallePedidoView(pedido,null);
+	        DetallePedidoView frame = new DetallePedidoView(pedido,null, null);
 	        frame.setLocationRelativeTo(this); 
 	        frame.setVisible(true); 
 	    }
@@ -161,38 +164,43 @@ import controller.PedidoController;
 				ReiniciarTablaConFiltros();
 			}
 
-			private void ReiniciarTablaConFiltros() {
-				System.out.println("FILTROS "+tipoFiltro+" "+textoFiltro);
-				List<Pedido> pedidos = new ArrayList<Pedido>();
-				if(textoFiltro.isEmpty())
-				pedidos=pedidoController.listarPedidos(false,false,true);
-				else if(tipoFiltro.contentEquals("Pedido")) {
-					Pedido pedidoID=pedidoController.obtenerPedido(Integer.parseInt(textoFiltro));				
-					pedidos.add(pedidoID);
-				}
-				else if(tipoFiltro.contentEquals("Mozo")) {
-					pedidos=pedidoController.listarPedidosPorMozo(textoFiltro);
-				}
-				else if(tipoFiltro.contentEquals("Sala")) {
-					pedidos=pedidoController.listarPedidosPorSala(textoFiltro);
-				}
-				
-		        tableModel.setRowCount(0);
-		        for (int i = pedidos.size() - 1; i >= 0; i--) {
-		            Pedido pedido = pedidos.get(i);
-		            tableModel.addRow(new Object[] {
-		                pedido.getIdPedido(),
-		                pedido.getNombreSala(),
-		                pedido.getNumeroMesa(),
-		                pedido.getFecha(),
-		                pedido.getTotal(),
-		                pedido.getUsuario(),
-		                "Ver Detalle"
-		            });
-		        }
-				
-				
+			public void ReiniciarTablaConFiltros() {
+			    List<Pedido> pedidos = new ArrayList<Pedido>();
+			    
+			    if (textoFiltro.isEmpty()) {
+			        pedidos = pedidoController.listarPedidos(false, false, true);
+			    } else if (tipoFiltro.contentEquals("Pedido")) {
+			        Pedido pedidoID = pedidoController.obtenerPedido(Integer.parseInt(textoFiltro));
+			        pedidos.add(pedidoID);
+			    } else if (tipoFiltro.contentEquals("Mozo")) {
+			        pedidos = pedidoController.listarPedidosPorMozo(textoFiltro);
+			    } else if (tipoFiltro.contentEquals("Sala")) {
+			        pedidos = pedidoController.listarPedidosPorSala(textoFiltro);
+			    }
+			    
+			    // Ordenar la lista por ID en orden ascendente
+			    pedidos.sort(Comparator.comparing(Pedido::getIdPedido));
+
+			    tableModel.setRowCount(0);
+			    for (Pedido pedido : pedidos) {
+			        tableModel.addRow(new Object[] {
+			            pedido.getIdPedido(),
+			            pedido.getNombreSala(),
+			            pedido.getNumeroMesa(),
+			            pedido.getFecha(),
+			            pedido.getTotal(),
+			            pedido.getUsuario(),
+			            "Ver Detalle"
+			        });
+			    }
 			}
+			
+	    public void actualizarTabla() {
+				 ReiniciarTablaConFiltros();
+				 tableModel.fireTableDataChanged();
+				 revalidate();
+				 repaint();
+			 }
 
 			
 		@Override

@@ -92,7 +92,7 @@ public class CustomComboBox<E> extends JComboBox<E> {
         }
         
         @Override
-        protected ListCellRenderer<?> createRenderer() {
+        protected ListCellRenderer createRenderer() {
             return new ListCellRenderer<Object>() {
                 @Override
                 public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -122,7 +122,7 @@ public class CustomComboBox<E> extends JComboBox<E> {
 
             private static final long serialVersionUID = 1L;
 
-			public ComboSuggestionPopup(JComboBox<?> combo) {
+			public ComboSuggestionPopup(JComboBox<Object> combo) {
                 super(combo);
                 setBorder(new Border(1));
             }

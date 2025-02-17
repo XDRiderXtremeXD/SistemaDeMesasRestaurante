@@ -1,4 +1,4 @@
-package view;
+ package view;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -34,10 +34,14 @@ public class Dashboard extends JFrame implements ActionListener {
     private HistorialPedidoView historialPedidoView;
     private UsuariosView usuariosView;
     private RealizarPedidoView realizarPedidoView;
+    private DetallePedidoView detallePedidoView;
 
     private CustomButton btnCartaDelDia, btnSalas, btnPedidos, btnInicio, btnUsuarios, btnHistorialPedidos, btnCerrarSesion;
     private JTabbedPane tabbedPane;
     private JPanel FooterOptions;
+    
+    
+
 
     public Dashboard(Usuario usuario) {
         this.usuario = usuario;
@@ -63,36 +67,18 @@ public class Dashboard extends JFrame implements ActionListener {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                CustomAlert.showConfirmationAlert(
-                    "Confirmación", 
-                    "¿Estás seguro de cerrar sesión?",
-                    evt -> {
-                        // Acción al presionar "Aceptar": limpiar sesión, mostrar Login y cerrar Dashboard.
-                        Preferences prefs = Preferences.userNodeForPackage(Login.class);
-                        prefs.remove("id");
-                        prefs.remove("username");
-                        prefs.remove("email");
-                        prefs.remove("password");
-                        prefs.remove("role");
-                        
-                        new Login().setVisible(true);
-                        dispose();
-                        GlassPanePopup.closePopupLast();
-                    },
-                    evt -> {
-                        // Acción al presionar "Cancelar": simplemente se cierra el popup.
-                        GlassPanePopup.closePopupLast();
-                    }
-                );
+                cerrarSesion();
             }
         });
+
+
     }
 
     private void initComponents() {
         // Panel del header con imagen
         JPanel headerImage = new JPanel();
         headerImage.setBackground(SystemColor.textHighlightText);
-        JLabel lblHeaderImage = new JLabel(new ImageIcon(getClass().getResource("/imgs/fondo.png")));
+        JLabel lblHeaderImage = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("imgs/fondo.png")));
         headerImage.add(lblHeaderImage);
         getContentPane().add(headerImage, BorderLayout.NORTH);
 
@@ -117,14 +103,23 @@ public class Dashboard extends JFrame implements ActionListener {
     }
 
     private void initViews() {
-        realizarPedidoView = new RealizarPedidoView(platoController.listar(), usuario);
+        historialPedidoView = new HistorialPedidoView();
+         
+         if(usuario.getRol().equals("Mozo")) 
+            pedidosActualesView = new PedidosActualesView(true, true, false );
+         else if (usuario.getRol().equals("Cocinero")) 
+        	pedidosActualesView = new PedidosActualesView(true, false, false );
+         else if (usuario.getRol().equals("Administrador"))
+        	pedidosActualesView = new PedidosActualesView(true, true, true);
+         else 
+        	pedidosActualesView = new PedidosActualesView(false, false, false);
+        
+        realizarPedidoView = new RealizarPedidoView(platoController.listar(), usuario, pedidosActualesView);
         mesasView = new MesasView(salaController, tabbedPane, realizarPedidoView);
         inicioView = new Inicio(salaController, mesasView, tabbedPane);
         salasView = new SalasView(salaController, inicioView, mesasView);
         cartaDelDiaView = new CartaDelDiaView(platoController.listar());
         usuariosView = new UsuariosView(usuarioController.listar());
-        pedidosActualesView = new PedidosActualesView(true, true, false);
-        historialPedidoView = new HistorialPedidoView();
         finalizarPedidoView = new FinalizarPedidoView();
 
         tabbedPane.addTab("Inicio", null, inicioView, null);
@@ -167,16 +162,19 @@ public class Dashboard extends JFrame implements ActionListener {
         
         // Agregamos un "glue" para empujar el siguiente componente hacia la derecha
         FooterOptions.add(Box.createHorizontalGlue());
+
         
         btnCerrarSesion = new CustomButton();
         btnCerrarSesion.setText("Cerrar Sesión");
+        btnCerrarSesion.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnCerrarSesion.setPreferredSize(buttonSize);
-        btnCerrarSesion.addActionListener(e -> cerrarSesion());
         btnCerrarSesion.setBackground(new Color(253, 83, 83));
         btnCerrarSesion.setForeground(new Color(245, 245, 245));
         btnCerrarSesion.setRippleColor(new Color(255, 255, 255));
         btnCerrarSesion.setShadowColor(new Color(253, 83, 83));
+        btnCerrarSesion.addActionListener(e -> cerrarSesion());
         FooterOptions.add(btnCerrarSesion);
+
     }
 
     private CustomButton createButton(String text, Dimension size) {
@@ -205,13 +203,15 @@ public class Dashboard extends JFrame implements ActionListener {
             tabbedPane.setSelectedComponent(pedidosActualesView);
         } else if (sourceButton == btnHistorialPedidos) {
             tabbedPane.setSelectedComponent(historialPedidoView);
+            historialPedidoView.ReiniciarTablaConFiltros();
         } else if (sourceButton == btnUsuarios) {
             usuariosView.listar(usuarioController.listar());
             usuariosView.valoresIniciales();
             tabbedPane.setSelectedComponent(usuariosView);
         } else if (sourceButton == btnInicio) {
             tabbedPane.setSelectedComponent(inicioView);
-        }
+        } 
+        
     }
 
     private void resetButtonColors() {
@@ -223,25 +223,20 @@ public class Dashboard extends JFrame implements ActionListener {
     }
 
     private void cerrarSesion() {
-    	CustomAlert.showConfirmationAlert("Confirmación", "¿Estás seguro de cerrar sesión?",
-				evt -> {
-			        // Acción al presionar "Aceptar"
-					Preferences prefs = Preferences.userNodeForPackage(Login.class);
-					prefs.remove("id");
-			        prefs.remove("username");
-			        prefs.remove("email");
-			        prefs.remove("password");
-			        prefs.remove("role");
-			        new Login().setVisible(true);
-			        
-			        this.dispose();
-					GlassPanePopup.closePopupLast();
-			    },
-			    evt -> {
-			        // Acción al presionar "Cancelar"
-			        GlassPanePopup.closePopupLast();
-			    }
+        CustomAlert.showConfirmationAlert(
+            "Cerrar Sesión", 
+            "¿Estás seguro de cerrar sesión?", 
+            e -> {
+                new Login().setVisible(true); // Mostrar la pantalla de inicio de sesión
+                dispose(); 
+            },
+            e -> {
+                
+            }
         );
     }
+
+
+
 
 }
