@@ -7,26 +7,21 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.util.List;
-
 import javax.swing.SwingConstants;
-
 import model.DetallePedido;
 import model.Pedido;
+import raven.glasspanepopup.GlassPanePopup;
 import utils.GenerarPdf;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-
+import components.CustomAlert;
 import components.CustomButton;
 import components.CustomTable;
 import controller.DetallePedidoController;
 import controller.PedidoController;
-
 import java.awt.Color;
-
 import javax.swing.ImageIcon;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -82,15 +77,17 @@ public class DetallePedidoView extends JFrame implements ActionListener {
         
         CustomTable.TableCustom.apply(scrollPane, CustomTable.TableCustom.TableType.DEFAULT);
         
-        btnPdf = new CustomButton();
-        btnPdf.addActionListener(this);
-        btnPdf.setText("PDF");
-        btnPdf.setShadowColor(new Color(0, 123, 255));
-        btnPdf.setRippleColor(Color.WHITE);
-        btnPdf.setForeground(new Color(245, 245, 245));
-        btnPdf.setBackground(new Color(0, 123, 255));
-        btnPdf.setBounds(309, 540, 143, 40);
-        contentPane.add(btnPdf);
+        if (pedido.getEstado().equals("Finalizado")) {
+        	btnPdf = new CustomButton();
+            btnPdf.addActionListener(this);
+            btnPdf.setText("PDF");
+            btnPdf.setShadowColor(new Color(0, 123, 255));
+            btnPdf.setRippleColor(Color.WHITE);
+            btnPdf.setForeground(new Color(245, 245, 245));
+            btnPdf.setBackground(new Color(0, 123, 255));
+            btnPdf.setBounds(309, 540, 143, 40);
+            contentPane.add(btnPdf);
+        }   
     }
     
     private void ViewEstado() {
@@ -134,12 +131,34 @@ public class DetallePedidoView extends JFrame implements ActionListener {
         
         // Acción para actualizar el estado del pedido
         btnCambiarEstado.addActionListener(e -> {
-            PedidoController pedidoController = new PedidoController();
-            String nuevoEstadoPedido = btnCambiarEstado.getText();
-            pedido.setEstado(nuevoEstadoPedido);
-            pedidoController.actualizarPedido(pedido);
-            pedidoView.CargarPedidosEnTabla();
-            this.dispose();
+        	
+        	String nuevoEstado1 = "";
+            if (pedido.getEstado().contentEquals("Pendiente"))
+            	nuevoEstado1 = "Entregado";
+            if (pedido.getEstado().contentEquals("Entregado"))
+            	nuevoEstado1 = "Finalizado";
+        	
+        	CustomAlert.showConfirmationAlert(
+                    "Confirmación", 
+                    "¿Estás seguro de cambiar el estado a " + nuevoEstado1 + "?",
+                    evt -> {
+                        // Acción al presionar "Aceptar"
+                    	PedidoController pedidoController = new PedidoController();
+                        String nuevoEstadoPedido = btnCambiarEstado.getText();
+                        pedido.setEstado(nuevoEstadoPedido);
+                        pedidoController.actualizarPedido(pedido);
+                        pedidoView.CargarPedidosEnTabla();
+                        this.dispose();
+                        GlassPanePopup.closePopupLast();
+                    },
+                    evt -> {
+                        // Acción al presionar "Cancelar"
+                    	this.dispose();
+                        GlassPanePopup.closePopupLast();
+                    }
+                );
+        	
+            
         });
     }
     

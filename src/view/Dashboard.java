@@ -91,14 +91,10 @@ public class Dashboard extends JFrame implements ActionListener {
     private void initViews() {
         historialPedidoView = new HistorialPedidoView();
         
-		if (usuario.getRol().equals("Mozo")) 
-			pedidosActualesView = new PedidosActualesView(true, true, false);
-		else if (usuario.getRol().equals("Cocinero")) 
+        if (usuario.getRol().equals("Cocinero")) 
 			pedidosActualesView = new PedidosActualesView(true, false, false);
-		else if (usuario.getRol().equals("Administrador"))
-			pedidosActualesView = new PedidosActualesView(true, true, true);
 		else 
-			pedidosActualesView = new PedidosActualesView(false, false, false);
+			pedidosActualesView = new PedidosActualesView(true, true, false);
         
         realizarPedidoView = new RealizarPedidoView(platoController.listar(), usuario, pedidosActualesView);
         mesasView = new MesasView(salaController, tabbedPane, realizarPedidoView);
