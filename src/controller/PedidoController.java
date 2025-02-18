@@ -74,16 +74,4 @@ public class PedidoController {
             System.out.println("No se pudo eliminar el pedido con ID: " + idPedido);
         }
     }
-    
-    public List<Pedido> listarPedidosPorMozo(String mozo) {
-        return listPedidos.stream()
-                          .filter(pedido -> pedido.getUsuario().toLowerCase().contains(mozo.toLowerCase()))
-                          .collect(Collectors.toList());
-    }
-
-    public List<Pedido> listarPedidosPorSala(String nombreSala) {
-        return listPedidos.stream()
-                          .filter(pedido -> pedido.getNombreSala().toLowerCase().contains(nombreSala.toLowerCase()))
-                          .collect(Collectors.toList());
-    }
 }

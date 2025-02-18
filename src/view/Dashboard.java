@@ -198,10 +198,10 @@ public class Dashboard extends JFrame implements ActionListener {
             tabbedPane.setSelectedComponent(salasView);
         } else if (sourceButton == btnPedidos) {
             tabbedPane.setSelectedComponent(pedidosActualesView);
-            pedidosActualesView.inicializarTablaDatos();
+            pedidosActualesView.CargarPedidosEnTabla();
         } else if (sourceButton == btnHistorialPedidos) {
             tabbedPane.setSelectedComponent(historialPedidoView);
-            historialPedidoView.ReiniciarTablaConFiltros();
+            historialPedidoView.CargarPedidosEnTabla();
         } else if (sourceButton == btnUsuarios) {
             usuariosView.listar(usuarioController.listar());
             usuariosView.valoresIniciales();
