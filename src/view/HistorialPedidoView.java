@@ -40,7 +40,11 @@ import javax.swing.JTable;
 //Define el formato de fecha que deseas
 
 
-public class HistorialPedidoView extends JPanel implements ActionListener,DocumentListener{
+
+//Define el formato de fecha que deseas
+
+
+public class HistorialPedidoView extends JPanel implements ActionListener, DocumentListener{
 	private static final long serialVersionUID = 1L;
 	
 	private CustomTextField txtFiltro;
@@ -57,9 +61,9 @@ public class HistorialPedidoView extends JPanel implements ActionListener,Docume
 	private DateTimeFormatter formatter;
 
 	public HistorialPedidoView() {
-		pedidoController=new PedidoController();
-		tipoFiltro="Pedido";
-		textoFiltro="";
+		pedidoController = new PedidoController();
+		tipoFiltro = "Pedido";
+		textoFiltro = "";
 		setPreferredSize(new Dimension(1427, 675));
 		setLayout(new BorderLayout(0, 0));
 		formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

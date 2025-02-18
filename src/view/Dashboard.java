@@ -106,8 +106,8 @@ public class Dashboard extends JFrame implements ActionListener {
         salasView = new SalasView(salaController, inicioView, mesasView);
         cartaDelDiaView = new CartaDelDiaView(platoController.listar());
         usuariosView = new UsuariosView(usuarioController.listar());
-
-        tabbedPane.addTab("Inicio", null, inicioView, null);
+        
+    	tabbedPane.addTab("Inicio", null, inicioView, null);
         tabbedPane.addTab("Mesas", null, mesasView, null);
         tabbedPane.addTab("Salas", null, salasView, null);
         tabbedPane.addTab("Carta del día", null, cartaDelDiaView, null);
@@ -119,6 +119,7 @@ public class Dashboard extends JFrame implements ActionListener {
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             tabbedPane.setEnabledAt(i, false);
         }
+        
         tabbedPane.setSelectedComponent(inicioView);
     }
 
@@ -131,17 +132,33 @@ public class Dashboard extends JFrame implements ActionListener {
         btnCartaDelDia = createButton("Carta del día", buttonSize);
         btnUsuarios = createButton("Usuarios", buttonSize);
         
-        FooterOptions.add(btnInicio);
-        FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        FooterOptions.add(btnPedidos);
-        FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        FooterOptions.add(btnSalas);
-        FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        FooterOptions.add(btnHistorialPedidos);
-        FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        FooterOptions.add(btnCartaDelDia);
-        FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        FooterOptions.add(btnUsuarios);
+        if (usuario.getRol().equals("Mozo")) {
+        	FooterOptions.add(btnInicio);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnPedidos);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnHistorialPedidos);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnCartaDelDia);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+        } else if (usuario.getRol().equals("Cocinero")) {
+            FooterOptions.add(btnPedidos);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnHistorialPedidos);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnCartaDelDia);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+        } else if (usuario.getRol().equals("Administrador")) {
+        	FooterOptions.add(btnInicio);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnPedidos);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnHistorialPedidos);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnCartaDelDia);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnUsuarios);
+        }
         
         FooterOptions.add(Box.createHorizontalGlue());
      
