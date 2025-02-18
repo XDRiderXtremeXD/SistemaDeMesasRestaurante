@@ -23,7 +23,7 @@ CREATE TABLE Pedido (
   IdPedido INT NOT NULL AUTO_INCREMENT,
   SalaId INT NOT NULL,
   NumeroMesa INT NOT NULL,
-  Fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  Fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   Total DECIMAL(10,2) NOT NULL,
   Estado ENUM('Pendiente','Entregado','Finalizado') NOT NULL DEFAULT 'Pendiente',
   Usuario VARCHAR(100) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE Usuario (
   NombreUsuario VARCHAR(50) UNIQUE,
   Correo VARCHAR(200) NOT NULL,
   Contrasena VARCHAR(50) NOT NULL,
-  Rol VARCHAR(20) NOT NULL,
+  Rol ENUM('Mozo','Cocinero','Administrador') NOT NULL,
   PRIMARY KEY (IdUsuario)
 );
 ```
