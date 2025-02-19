@@ -149,6 +149,8 @@ public class Dashboard extends JFrame implements ActionListener {
             FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
             FooterOptions.add(btnPedidos);
             FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
+            FooterOptions.add(btnSalas);
+            FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
             FooterOptions.add(btnHistorialPedidos);
             FooterOptions.add(Box.createRigidArea(new Dimension(10, 0)));
             FooterOptions.add(btnCartaDelDia);
